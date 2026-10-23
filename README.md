@@ -1,5 +1,5 @@
 Đồ án môn công nghệ phần mềm
-Chủ đề 2: Beckend Dev theo hướng 3 lớp bao gồm CD/CI
+Chủ đề 2: Backend Dev theo hướng 3 lớp bao gồm CD/CI
 ============================
 Thành viên nhóm:
 Vũ Quang Huy - 3124411114
