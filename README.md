@@ -2,6 +2,6 @@
 Chủ đề 2: Beckend Dev theo hướng 3 lớp bao gồm CD/CI
 ============================
 Thành viên nhóm:
-Vũ Quang Huy
-Hà Duy Bảo Khang
-Lư Huỳnh Triệu Phú
+Vũ Quang Huy - 3124411114
+Hà Duy Bảo Khang - 3124411123
+Lư Huỳnh Triệu Phú - 3124411231
