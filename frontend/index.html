@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Đầm Sen · Thuyết minh du lịch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@600;700&display=swap">
+<style>
+:root {
+  --green-dark: #004d40;
+  --green-btn: #0D473B;
+  --bg-light: #F4F8F5;
+  --text-dark: #1C332B;
+  --text-muted: #627D73;
+  --white: #FFFFFF;
+  --line: #D0E0D8;
+  --amber: #FFF1D0;
+  --amberink: #6B4300;
+  --lotus: #F4C2CF;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;background:#E8EFEB;}
+body{font:400 15px/1.5 "Be Vietnam Pro", system-ui, sans-serif;color:var(--text-dark)}
+
+.app{
+  max-width:430px;
+  min-height:100vh;
+  margin:0 auto;
+  background:var(--bg-light);
+  display:flex;
+  flex-direction:column;
+  box-shadow: 0 0 20px rgba(0,0,0,0.08);
+  position: relative;
+}
+
+/* Header */
+header {
+  background: var(--green-dark);
+  color: #fff;
+  padding: calc(16px + env(safe-area-inset-top,0px)) 20px 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+  position: relative;
+}
+.top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.brand-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0;
+}
+.brand-sub {
+  font-size: 15px;
+  font-weight: 400;
+  margin-top: 4px;
+  opacity: 0.9;
+}
+.logo-img {
+  width: 55px;
+  height: 55px;
+  object-fit: contain;
+  background: #fff;
+  border-radius: 50%;
+  padding: 4px;
+}
+
+/* Language selector buttons */
+.lang {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.lang button {
+  font: 500 13px "Be Vietnam Pro", sans-serif;
+  color: #fff;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.6);
+  border-radius: 99px;
+  padding: 6px 16px;
+  min-height: 34px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.lang button[aria-pressed=true] {
+  background: #fff;
+  color: var(--green-dark);
+  border-color: #fff;
+  font-weight: 600;
+}
+
+/* Main Container */
+main {
+  flex: 1;
+  padding: 16px 20px 36px;
+}
+.screen { display: none; }
+.screen.on { display: block; }
+
+/* Home Section Styles */
+.hero-card {
+  margin-top: 4px;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+.hero-img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  max-height: 380px;
+}
+
+.home-intro {
+  text-align: center;
+  margin: 24px 0 20px;
+}
+.home-intro h2 {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  color: var(--green-dark);
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+.home-intro p {
+  color: var(--text-muted);
+  font-size: 14px;
+  line-height: 1.5;
+  margin: 0 auto;
+  max-width: 320px;
+}
+
+/* Action Buttons */
+.home-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+.btn-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 20px;
+  border-radius: 99px;
+  font: 600 16px "Be Vietnam Pro", sans-serif;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+  text-decoration: none;
+}
+.btn-primary {
+  background: var(--green-btn);
+  color: #fff;
+}
+.btn-secondary {
+  background: transparent;
+  color: var(--green-dark);
+  border: 1.5px solid var(--green-dark);
+}
+.btn-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.btn-icon {
+  width: 22px;
+  height: 22px;
+  fill: currentColor;
+}
+.arrow-icon {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+  opacity: 0.8;
+}
+
+/* Shared UI Components */
+h2 { font: 600 24px 'Playfair Display', serif; margin: 8px 0 12px; color: var(--green-dark); }
+h3 { font: 600 16px "Be Vietnam Pro", sans-serif; margin: 20px 0 6px; }
+.lead, .note, .meta { color: var(--text-muted); }
+.meta { font-size: 13px; margin: 4px 0 0; }
+.stack { display: grid; gap: 12px; margin: 20px 0 0; }
+.row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 12px; }
+.row .btn { width: auto; flex: 1 1 140px; }
+.btn {
+  display: block; width: 100%; min-height: 48px; padding: 12px 16px; border-radius: 12px;
+  border: 1.5px solid var(--green-dark); font: 600 15px "Be Vietnam Pro", sans-serif;
+  cursor: pointer; background: var(--green-dark); color: #fff; text-align: center;
+}
+.btn.ghost { background: transparent; color: var(--green-dark); }
+.link { background: none; border: 0; color: var(--green-dark); font: 600 15px "Be Vietnam Pro", sans-serif; text-decoration: underline; padding: 6px 0; cursor: pointer; }
+.notice { background: var(--amber); color: var(--amberink); padding: 12px 14px; border-radius: 12px; margin: 14px 0; font-size: 14px; }
+.tag { display: inline-block; background: var(--lotus); color: #5C1F31; font-size: 12px; font-weight: 600; padding: 3px 9px; border-radius: 99px; }
+.poi { display: flex; justify-content: space-between; align-items: center; gap: 12px; width: 100%; min-height: 56px; padding: 12px 0; background: none; border: 0; border-bottom: 1px solid var(--line); font: inherit; color: inherit; text-align: left; cursor: pointer; }
+.poi b { display: block; font-weight: 600; }
+.poi small { display: block; font-size: 13px; color: var(--text-muted); }
+input, select { width: 100%; min-height: 46px; font: 15px "Be Vietnam Pro", sans-serif; padding: 10px 14px; border: 1.5px solid var(--line); border-radius: 10px; background: #fff; color: var(--text-dark); margin-top: 8px; }
+progress { height: 8px; accent-color: var(--green-dark); }
+.body { font-size: 16px; line-height: 1.6; margin: 14px 0; }
+.sample { font-size: 13px; color: var(--text-muted); }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="top">
+      <div>
+        <h1 class="brand-title">Đầm Sen</h1>
+        <div class="brand-sub" data-k="sub_title">Thuyết minh du lịch</div>
+      </div>
+      <!-- Logo Đầm Sen Park từ link bạn cung cấp -->
+      <img src="https://damsenpark.vn/wp-content/uploads/2018/08/logo-dam-sen.png" class="logo-img" alt="Dam Sen Park Logo">
+    </div>
+    <div class="lang" role="group" aria-label="Language">
+      <button data-l="vi" aria-pressed="true">Tiếng Việt</button>
+      <button data-l="en" aria-pressed="false">English</button>
+      <button data-l="ko" aria-pressed="false">한국어</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="bootStatus" class="notice" aria-live="polite">
+      <b id="bootTitle">Đang chuẩn bị dữ liệu...</b>
+      <div id="bootText">Đang tải dữ liệu và âm thanh</div>
+      <progress id="bootProgress" max="100" value="0" style="width:100%;margin-top:8px"></progress>
+    </section>
+
+    <!-- Trang chủ với ảnh banner từ link bạn cung cấp -->
+    <section class="screen on" id="s-home">
+      <div class="hero-card">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfLo7LEgxj4KFLC71aiE82Le9UpS6brWkbS-CumiwJhQ&s=10" class="hero-img" alt="Công viên văn hoá Đầm Sen">
+      </div>
+
+      <div class="home-intro">
+        <h2 data-k="home_h">Khám phá Đầm Sen</h2>
+        <p data-k="home_p">Lắng nghe thuyết minh, tìm hiểu thêm về các điểm tham quan và tận hưởng trọn vẹn hành trình của bạn!</p>
+      </div>
+
+      <div class="home-actions">
+        <button class="btn-action btn-primary" onclick="show('near')">
+          <div class="btn-left">
+            <svg class="btn-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            <span data-k="near">Tìm điểm gần tôi</span>
+          </div>
+          <svg class="arrow-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+        </button>
+
+        <button class="btn-action btn-secondary" onclick="show('list')">
+          <div class="btn-left">
+            <svg class="btn-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+            <span data-k="list">Danh sách điểm tham quan</span>
+          </div>
+          <svg class="arrow-icon" viewBox="0 0 24 24"><path fill="currentColor" d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <!-- Các màn hình chức năng phụ -->
+    <section class="screen" id="s-near">
+      <button class="link" data-k="back" onclick="show('home')"></button>
+      <h2 data-k="near_h"></h2>
+      <p class="lead" data-k="near_p"></p>
+      <div class="stack"><button class="btn" data-k="gps" onclick="gps()"></button></div>
+      <p class="note" data-k="or_sample"></p>
+      <div class="row">
+        <button class="btn ghost" data-k="sp1" onclick="samp(10.7676,106.6406)"></button>
+        <button class="btn ghost" data-k="sp2" onclick="samp(10.7682,106.6400)"></button>
+        <button class="btn ghost" data-k="sp3" onclick="samp(10.7800,106.6600)"></button>
+      </div>
+      <div id="nearOut"></div>
+    </section>
+
+    <section class="screen" id="s-list">
+      <button class="link" data-k="back" onclick="show('home')"></button>
+      <h2 data-k="list_h"></h2>
+      <input id="q" type="search" data-kp="search" oninput="renderList()">
+      <select id="zone" onchange="renderList()"></select>
+      <div id="listOut"></div>
+    </section>
+
+    <section class="screen" id="s-detail">
+      <button class="link" data-k="back" onclick="show(from)"></button>
+      <div id="detailOut"></div>
+    </section>
+  </main>
+</div>
+
+<script>
+const I = {
+  vi: {
+    brand: 'Đầm Sen',
+    sub_title: 'Thuyết minh du lịch',
+    home_h: 'Khám phá Đầm Sen',
+    home_p: 'Lắng nghe thuyết minh, tìm hiểu thêm về các điểm tham quan và tận hưởng trọn vẹn hành trình của bạn!',
+    near: 'Tìm điểm gần tôi',
+    list: 'Danh sách điểm tham quan',
+    back: '← Quay lại',
+    near_h: 'Điểm gần tôi',
+    near_p: 'Ứng dụng dùng vị trí của bạn để tìm điểm thuyết minh ở gần. Vị trí không được lưu lại.',
+    gps: 'Dùng vị trí của tôi',
+    or_sample: 'Hoặc thử với vị trí mẫu',
+    sp1: 'Tâm công viên',
+    sp2: 'Gần Hồ sen',
+    sp3: 'Ngoài khu vực',
+    sim: 'Vị trí giả lập',
+    denied: 'Bạn chưa cho phép truy cập vị trí.',
+    unavail: 'Chưa xác định được vị trí.',
+    timeout: 'Lấy vị trí mất quá nhiều thời gian.',
+    nosupport: 'Thiết bị không hỗ trợ định vị.',
+    retry: 'Thử lại',
+    see_list: 'Xem danh sách điểm',
+    q_good: 'Vị trí tốt', q_fair: 'Vị trí khá', q_poor: 'Vị trí kém chính xác',
+    poor_note: 'Vị trí có thể chưa chính xác (sai số khoảng {m} m).',
+    out: 'Bạn đang ở ngoài khu vực công viên.',
+    none: 'Không có điểm trong {r} m. Điểm gần nhất: {n} (khoảng {d} m).',
+    open: 'Mở điểm', dist: '≈ {d} m (đường thẳng)', near_tag: 'Đang ở gần',
+    list_h: 'Danh sách điểm tham quan', search: 'Tìm theo tên điểm...',
+    all: 'Tất cả khu vực', nores: 'Không tìm thấy điểm phù hợp.',
+    listen: 'Nghe thuyết minh', relisten: 'Nghe lại', stop: 'Dừng',
+    fb: 'Nội dung này chưa có bằng ngôn ngữ này, đang hiển thị tiếng Việt.',
+    noaudio: 'Chưa có âm thanh', audio_yes: 'Có âm thanh',
+    booting: 'Đang chuẩn bị dữ liệu...', bootdone: 'Đã chuẩn bị xong',
+    bootfail: 'Một số dữ liệu chưa tải được.', loading: 'Đang tải dữ liệu và âm thanh',
+    audio_err: 'Không phát được âm thanh.', demo: 'Nội dung thuyết minh mẫu.'
+  },
+  en: {
+    brand: 'Dam Sen',
+    sub_title: 'Audio Guide',
+    home_h: 'Explore Dam Sen',
+    home_p: 'Listen to narration, discover spots, and enjoy your full journey!',
+    near: 'Find points near me',
+    list: 'All attractions',
+    back: '← Back',
+    near_h: 'Points near me',
+    near_p: 'App uses location to find nearby audio stops.',
+    gps: 'Use my location',
+    or_sample: 'Or try sample location',
+    sp1: 'Park centre', sp2: 'Near Lotus pond', sp3: 'Outside',
+    sim: 'Simulated', denied: 'Location access off.', unavail: 'Location unavailable.',
+    timeout: 'Timeout getting location.', nosupport: 'GPS not supported.',
+    retry: 'Try again', see_list: 'See list',
+    q_good: 'Good GPS', q_fair: 'Fair GPS', q_poor: 'Inaccurate GPS',
+    poor_note: 'Accuracy margin ~{m} m.', out: 'You are outside the park.',
+    none: 'No points within {r}m. Nearest: {n} ({d}m).', open: 'Open', dist: '≈ {d} m',
+    near_tag: 'Nearby', list_h: 'Attractions List', search: 'Search points...',
+    all: 'All zones', nores: 'No points found.', listen: 'Listen audio',
+    relisten: 'Replay', stop: 'Stop', fb: 'Showing Vietnamese version.',
+    noaudio: 'No audio', audio_yes: 'Audio ready', booting: 'Loading...',
+    bootdone: 'Ready', bootfail: 'Data load failed.', loading: 'Downloading resources',
+    audio_err: 'Cannot play audio.', demo: 'Sample narration content.'
+  },
+  ko: {
+    brand: '담섬',
+    sub_title: '관광 해설',
+    home_h: '담섬 공원 탐험',
+    home_p: '음성 해설을 듣고 다양한 관람 điểm을 즐겨보세요!',
+    near: '내 주변 지점 찾기',
+    list: '관광 지점 목록',
+    back: '← 뒤로',
+    near_h: '내 주변 지점',
+    near_p: '주변 해설 지점을 찾기 위해 위치를 사용합니다.',
+    gps: '내 위치 사용', or_sample: '샘플 위치 사용',
+    sp1: '공원 중심', sp2: '연꽃 연못 근처', sp3: '공원 밖',
+    sim: '시뮬레이션', denied: '위치 권한 없음.', unavail: '위치 확인 불가.',
+    timeout: '시간 초과.', nosupport: '지원하지 않음.', retry: '다시 시도',
+    see_list: '목록 보기', q_good: '위치 양호', q_fair: '위치 보통', q_poor: '정확도 낮음',
+    poor_note: '오차 약 {m}m.', out: '공원 외곽에 있습니다.',
+    none: '{r}m 내 지점 없음. Nearest: {n} ({d}m).', open: '열기', dist: '≈ {d} m',
+    near_tag: '가까움', list_h: '지점 목록', search: '지점 검색...',
+    all: '전체 구역', nores: '결과 없음.', listen: '음성 듣기',
+    relisten: '다시 듣기', stop: '정지', fb: '베트남어로 표시됩니다.',
+    noaudio: '오디오 없음', audio_yes: '오디오 있음', booting: '준비 중...',
+    bootdone: '준비 완료', bootfail: '다운로드 실패.', loading: '데이터 다운로드 중',
+    audio_err: '재생 불가.', demo: '샘플 해설 내용입니다.'
+  }
+};
+
+const Z={a:{vi:'Khu lối vào',en:'Entrance area',ko:'입구 구역'},b:{vi:'Khu hồ',en:'Lake area',ko:'호수 구역'}};
+const POIS=[
+ {id:'P01',la:10.768,lo:106.64,nr:30,z:'a',au:1,on:1,t:{vi:'Hồ sen',en:'Lotus pond',ko:'연꽃 연못'},c:{vi:'Hồ sen là điểm dừng chân quen thuộc của khách. Hãy ngắm hoa vào buổi sáng khi không khí còn mát.',en:'The lotus pond is a favourite stop for visitors.',ko:'연꽃 연못은 많은 방문객이 즐겨 찾는 곳입니다.'}},
+ {id:'P02',la:10.769,lo:106.641,nr:30,z:'a',au:1,on:1,t:{vi:'Cổng chính'},c:{vi:'Cổng chính là nơi bắt đầu hành trình tham quan của bạn.'}},
+ {id:'P03',la:10.7665,lo:106.6425,nr:30,z:'b',au:0,on:1,t:{vi:'Nhà trưng bày',en:'Exhibition hall'},c:{vi:'Nhà trưng bày giới thiệu hiện vật và tư liệu về vùng đất này.',en:'The exhibition hall presents artefacts.'}},
+ {id:'P04',la:10.77,lo:106.638,nr:30,z:'b',au:0,on:1,t:{vi:'Quảng trường'},c:{vi:'Quảng trường là nơi tổ chức các hoạt động cộng đồng.'}}
+];
+
+const G=[10.7676,106.6406], PARK_R=1500, R0=300;
+let L='vi', cur='home', from='list', cp=null, nearErr=null, pos=null, sim=false;
+
+const $=id=>document.getElementById(id);
+const t=(k,v={})=>(I[L][k]||I.vi[k]||k).replace(/\{(\w+)\}/g,(_,n)=>v[n]??'');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const nm=p=>p.t[L]||p.t.vi;
+
+function hv(a,b,c,d){
+  const R=6371008.8,r=x=>x*Math.PI/180;
+  const h=Math.sin(r(c-a)/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(r(d-b)/2)**2;
+  return 2*R*Math.asin(Math.sqrt(h));
+}
+
+function qual(acc,age){if(age>60000)return'poor';if(acc<=30)return'good';if(acc<=100)return'fair';return'poor';}
+
+function findNear(p){
+  if(hv(p.la,p.lo,G[0],G[1])>PARK_R)return{out:true,items:[]};
+  const all=POIS.filter(x=>x.on).map(x=>({...x,d:hv(p.la,p.lo,x.la,x.lo)})).sort((a,b)=>a.d-b.d||a.id.localeCompare(b.id));
+  const inside=all.filter(x=>x.d<=R0);
+  return{out:false,items:inside.slice(0,10),nearest:all[0]};
+}
+
+function show(s){
+  cur=s; if('speechSynthesis' in window) speechSynthesis.cancel();
+  document.querySelectorAll('.screen').forEach(e=>e.classList.toggle('on',e.id==='s-'+s));
+  paint(); window.scrollTo(0,0);
+}
+
+function paint(){
+  document.documentElement.lang=L;
+  document.querySelectorAll('[data-k]').forEach(e=>e.textContent=t(e.dataset.k));
+  document.querySelectorAll('[data-kp]').forEach(e=>e.placeholder=t(e.dataset.kp));
+  document.querySelectorAll('.lang button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.l===L));
+  if(cur==='near')renderNear();
+  if(cur==='list')renderList();
+  if(cur==='detail')renderDetail();
+}
+
+document.querySelectorAll('.lang button').forEach(b=>b.addEventListener('click',()=>{
+  L=b.dataset.l;
+  if(activeAudio){activeAudio.pause();activeAudio=null;}
+  if('speechSynthesis' in window)speechSynthesis.cancel();
+  paint();
+}));
+
+/* GPS / Near */
+function gps(){
+  sim=false; nearErr=null;
+  if(!navigator.geolocation){nearErr='nosupport';renderNear();return;}
+  navigator.geolocation.getCurrentPosition(
+    p=>{pos={la:p.coords.latitude,lo:p.coords.longitude,acc:p.coords.accuracy,ts:p.timestamp};renderNear();},
+    e=>{nearErr=['denied','unavail','timeout'][e.code-1]||'unavail';pos=null;renderNear();},
+    {enableHighAccuracy:true,timeout:10000,maximumAge:30000});
+}
+function samp(la,lo){pos={la,lo,acc:8,ts:Date.now()};sim=true;nearErr=null;renderNear();}
+function renderNear(){
+  let h=sim&&pos?`<span class="tag">${t('sim')}</span>`:'';
+  if(nearErr)h+=`<div class="notice">${t(nearErr)}</div><div class="row"><button class="btn ghost" onclick="gps()">${t('retry')}</button><button class="btn ghost" onclick="show('list')">${t('see_list')}</button></div>`;
+  if(pos){
+    const q=qual(pos.acc,Date.now()-pos.ts), r=findNear(pos);
+    if(q==='poor')h+=`<div class="notice">${t('poor_note',{m:Math.round(pos.acc)})}</div>`;
+    h+=`<p class="meta">${t('q_'+q)}</p>`;
+    if(r.out)h+=`<div class="notice">${t('out')}</div><div class="row"><button class="btn ghost" onclick="show('list')">${t('see_list')}</button></div>`;
+    else if(!r.items.length)h+=`<div class="notice">${t('none',{r:R0,n:nm(r.nearest),d:Math.round(r.nearest.d)})}</div><div class="row"><button class="btn" onclick="openPoi('${r.nearest.id}')">${t('open')}</button></div>`;
+    else h+=r.items.map(p=>`<button class="poi" onclick="openPoi('${p.id}')"><span><b>${esc(nm(p))}</b><small>${t('dist',{d:Math.round(p.d)})}</small></span>${p.d<=p.nr&&q!=='poor'?`<span class="tag">${t('near_tag')}</span>`:''}</button>`).join('');
+  }
+  $('nearOut').innerHTML=h;
+}
+
+/* List */
+function renderList(){
+  const sel=$('zone'), z0=sel.value;
+  sel.innerHTML=`<option value="">${t('all')}</option>`+Object.keys(Z).map(k=>`<option value="${k}">${esc(Z[k][L]||Z[k].vi)}</option>`).join('');
+  sel.value=z0;
+  const q=$('q').value.trim().toLowerCase(), qq=q.length>=2?q:'';
+  const items=POIS.filter(p=>p.on&&(!sel.value||p.z===sel.value)&&(!qq||nm(p).toLowerCase().includes(qq)||p.t.vi.toLowerCase().includes(qq)));
+  $('listOut').innerHTML=items.length?Object.keys(Z).filter(k=>items.some(p=>p.z===k)).map(k=>`<h3>${esc(Z[k][L]||Z[k].vi)}</h3>`+items.filter(p=>p.z===k).map(p=>`<button class="poi" onclick="openPoi('${p.id}')"><span><b>${esc(nm(p))}</b><small>${t(p.au?'audio_yes':'noaudio')}</small></span></button>`).join('')).join(''):`<p class="note">${t('nores')}</p>`;
+}
+
+/* Detail & Audio */
+function openPoi(id){from=cur;cp=POIS.find(p=>p.id===id);show('detail');}
+function renderDetail(){
+  if(!cp)return;
+  const served=cp.c[L]?L:'vi';
+  $('detailOut').innerHTML=`<h2>${esc(nm(cp))}</h2><p class="meta">${esc(Z[cp.z][L]||Z[cp.z].vi)}</p>`
+    +(served!==L?`<div class="notice">${t('fb')}</div>`:'')
+    +`<p class="body">${esc(cp.c[served])}</p><p class="sample">${t('demo')}</p>`
+    +`<div class="stack"><button class="btn" id="listen" onclick="listen()">${t('listen')}</button></div><p id="aerr" class="note"></p>`;
+}
+let activeAudio=null;
+function listen(){
+  if('speechSynthesis' in window){
+    speechSynthesis.cancel();
+    const served=cp.c[L]?L:'vi';
+    const u=new SpeechSynthesisUtterance(cp.c[served]);
+    u.lang=L==='en'?'en-US':(L==='ko'?'ko-KR':'vi-VN');
+    speechSynthesis.speak(u);
+  }
+}
+
+async function bootstrap(){
+  const title=$('bootTitle'), txt=$('bootText'), bar=$('bootProgress'), status=$('bootStatus');
+  bar.value=100;
+  setTimeout(()=>{status.hidden=true;},800);
+}
+
+show('home');
+bootstrap();
+</script>
+</body>
+</html>
