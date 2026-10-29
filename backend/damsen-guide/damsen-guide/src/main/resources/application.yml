@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    url: jdbc:sqlserver://localhost:1433;databaseName=damsen_guide;encrypt=true;trustServerCertificate=true
+    username: sa
+    password: DamSen@StrongPassword123
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+app:
+  package:
+    fixed-version: v1.0.0
+  media:
+    root: ./data/media
+  geo:
+    park-center-lat: 10.767600
+    park-center-lng: 106.640600
+    park-radius-m: 1500
+    accuracy-good-m: 30
+    accuracy-fair-m: 100
+    max-location-age-ms: 60000
