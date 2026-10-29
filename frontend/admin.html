@@ -1,0 +1,498 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đầm Sen · Quản trị hệ thống Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+
+<style>
+:root {
+  --green-dark: #004d40;
+  --green-btn: #0D473B;
+  --bg-light: #F4F8F5;
+  --text-dark: #1C332B;
+  --text-muted: #627D73;
+  --white: #FFFFFF;
+  --line: #D0E0D8;
+  --red: #d32f2f;
+  --amber: #f57c00;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:#E8EFEB;font:400 14px/1.5 "Be Vietnam Pro", sans-serif;color:var(--text-dark)}
+
+.admin-container {
+  max-width: 1150px;
+  margin: 20px auto;
+  padding: 0 16px;
+}
+
+header {
+  background: var(--green-dark);
+  color: #fff;
+  padding: 20px 24px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+}
+
+header h1 { margin: 0; font-size: 22px; font-weight: 700; }
+header p { margin: 4px 0 0; font-size: 13px; opacity: 0.8; }
+
+.status-badge {
+  background: rgba(255,255,255,0.15);
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.layout-grid {
+  display: grid;
+  grid-template-columns: 440px 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .layout-grid { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: var(--white);
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+}
+
+.card h2 {
+  font-size: 17px;
+  margin: 0 0 16px;
+  color: var(--green-dark);
+  border-bottom: 2px solid var(--bg-light);
+  padding-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-weight: 600; font-size: 12px; margin-bottom: 4px; color: var(--text-dark); }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+  outline: none;
+  background: #fafafa;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  border-color: var(--green-dark);
+  background: #fff;
+}
+.form-row { display: flex; gap: 10px; }
+.form-row .form-group { flex: 1; }
+
+.lang-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+  background: var(--bg-light);
+  padding: 4px;
+  border-radius: 8px;
+}
+.lang-tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 6px;
+  color: var(--text-muted);
+}
+.lang-tab.active { background: var(--white); color: var(--green-dark); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.btn {
+  padding: 9px 16px;
+  border-radius: var(--radius-md);
+  border: none;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.btn:active { opacity: 0.85; }
+.btn-primary { background: var(--green-dark); color: #fff; width: 100%; margin-top: 8px; }
+.btn-cancel { background: #e0e0e0; color: #333; width: 100%; margin-top: 6px; }
+.btn-sm { padding: 4px 8px; font-size: 11px; }
+.btn-edit { background: #e3f2fd; color: #1976d2; }
+.btn-delete { background: #ffebee; color: var(--red); }
+
+/* TABLE STYLES */
+.table-responsive { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 13px; }
+th { background: var(--bg-light); color: var(--text-muted); font-weight: 600; }
+tr:hover { background: #fdfdfd; }
+
+.poi-thumb {
+  width: 44px; height: 44px; border-radius: 6px; object-fit: cover; background: #eee;
+}
+
+.status-dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px;
+}
+.status-dot.active { background: #4caf50; }
+.status-dot.inactive { background: #9e9e9e; }
+</style>
+</head>
+<body>
+
+<div class="admin-container">
+  <header>
+    <div>
+      <h1>Đầm Sen Tour · Admin Panel</h1>
+      <p>Hệ thống quản lý điểm tham quan & Thuyết minh đa ngôn ngữ</p>
+    </div>
+    <div class="status-badge" id="backendStatus">📡 Đang kết nối Server...</div>
+  </header>
+
+  <div class="layout-grid">
+    <!-- FORM QUẢN LÝ ĐIỂM VÀ WORKFLOW NỘI DUNG -->
+    <div class="card">
+      <h2 id="formTitle">Thêm điểm mới</h2>
+      <form id="poiForm" onsubmit="handleFormSubmit(event)">
+        <input type="hidden" id="currentPoiDbId">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Mã điểm (Code)</label>
+            <input type="text" id="poiCode" placeholder="vd: P05" required>
+          </div>
+          <div class="form-group">
+            <label>Khu vực (Zone ID)</label>
+            <select id="poiZone" required>
+              <option value="1">Khu Lối Vào & Cổng Chào (Zone 1)</option>
+              <option value="2">Khu Trò Chơi & Hồ Water Park (Zone 2)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>Vĩ độ (Latitude)</label>
+            <input type="number" step="any" id="poiLat" placeholder="10.7680" required>
+          </div>
+          <div class="form-group">
+            <label>Kinh độ (Longitude)</label>
+            <input type="number" step="any" id="poiLon" placeholder="106.6400" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>URL Hình ảnh (Image Key)</label>
+          <input type="text" id="poiImg" placeholder="https://domain.com/image.jpg">
+        </div>
+
+        <!-- TAB NGÔN NGỮ NỘI DUNG -->
+        <label style="font-weight:600; font-size:12px; margin-bottom:6px; display:block;">Nội dung thuyết minh theo ngôn ngữ:</label>
+        <div class="lang-tabs">
+          <button type="button" class="lang-tab active" onclick="switchLangTab('vi')">🇻🇳 Tiếng Việt</button>
+          <button type="button" class="lang-tab" onclick="switchLangTab('en')">🇬🇧 English</button>
+          <button type="button" class="lang-tab" onclick="switchLangTab('ko')">🇰🇷 한국어</button>
+        </div>
+
+        <!-- TAB TIẾNG VIỆT -->
+        <div id="tab-vi" class="tab-content active">
+          <div class="form-group">
+            <label>Tên địa điểm (VI)</label>
+            <input type="text" id="title_vi" placeholder="vd: Hồ Sen Đầm Sen" required>
+          </div>
+          <div class="form-group">
+            <label>Nội dung thuyết minh nguồn (VI)</label>
+            <textarea id="desc_vi" rows="3" placeholder="Nhập bài đọc thuyết minh tiếng Việt..." required></textarea>
+          </div>
+        </div>
+
+        <!-- TAB TIẾNG ANH -->
+        <div id="tab-en" class="tab-content">
+          <div class="form-group">
+            <label>Title (EN)</label>
+            <input type="text" id="title_en" placeholder="vd: Lotus Pond">
+          </div>
+          <div class="form-group">
+            <label>Audio Text (EN)</label>
+            <textarea id="desc_en" rows="3" placeholder="Enter English narration text..."></textarea>
+          </div>
+        </div>
+
+        <!-- TAB TIẾNG HÀN -->
+        <div id="tab-ko" class="tab-content">
+          <div class="form-group">
+            <label>Title (KO)</label>
+            <input type="text" id="title_ko" placeholder="vd: 연꽃 연못">
+          </div>
+          <div class="form-group">
+            <label>Audio Text (KO)</label>
+            <textarea id="desc_ko" rows="3" placeholder="Enter Korean narration text..."></textarea>
+          </div>
+        </div>
+
+        <!-- KHU VỰC THỰC THI WORKFLOW NGHIỆP VỤ -->
+        <div style="margin: 14px 0; padding: 12px; background: #f0f4f1; border-radius: 8px; border: 1px solid #c8dcd0;">
+          <h4 style="margin: 0 0 8px 0; font-size: 13px; color: #004d40;">📊 Quản lý Phiên bản & Tác vụ Backend</h4>
+          
+          <div style="display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap;">
+            <span id="badgeStatusVI" class="status-badge" style="background:#e0e0e0; color:#333;">VI: Chưa chốt</span>
+            <span id="badgeStatusEN" class="status-badge" style="background:#e0e0e0; color:#333;">EN: Nháp</span>
+            <span id="badgeStatusKO" class="status-badge" style="background:#e0e0e0; color:#333;">KO: Nháp</span>
+          </div>
+
+          <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+            <button type="button" class="btn btn-sm" style="background:#0D473B; color:#fff;" onclick="apiApproveVietnamese()">🔒 Chốt VI (Approve)</button>
+            <button type="button" class="btn btn-sm btn-edit" onclick="apiTriggerTranslation()">🤖 Yêu cầu Dịch (Job)</button>
+            <button type="button" class="btn btn-sm" style="background:#43a047; color:#fff;" onclick="apiGenerateTts()">🔊 Tạo Audio TTS</button>
+            <button type="button" class="btn btn-sm" style="background:#1976d2; color:#fff;" onclick="apiPublishContent()">🚀 Xuất bản (Publish)</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+            <input type="checkbox" id="poiActive" checked style="width:auto; min-height:auto;">
+            <span>Kích hoạt hoạt động (ACTIVE)</span>
+          </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary" id="btnSubmit">💾 Lưu điểm tham quan</button>
+        <button type="button" class="btn btn-cancel" id="btnCancel" onclick="resetForm()" style="display:none;">Hủy sửa</button>
+      </form>
+    </div>
+
+    <!-- DANH SÁCH BẢNG QUẢN TRỊ -->
+    <div class="card">
+      <h2>
+        <span>Danh sách điểm tham quan</span>
+        <button class="btn btn-edit btn-sm" onclick="loadPoisData()">🔄 Tải lại</button>
+      </h2>
+
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Hình</th>
+              <th>Mã / Tên</th>
+              <th>Tọa độ GPS</th>
+              <th>Trạng thái</th>
+              <th style="text-align:right;">Thao tác</th>
+            </tr>
+          </thead>
+          <tbody id="poiTableBody">
+            <tr><td colspan="5" style="text-align:center;">Đang tải danh sách...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const ADMIN_API_BASE = 'http://localhost:8080/api/v1/admin';
+let adminPois = [];
+let isBackendConnected = false;
+
+// Dữ liệu mẫu dự phòng khi chưa bật Server Java
+const DEFAULT_POIS = [
+  { id: '1', code: 'P01', latitude: 10.7680, longitude: 106.6400, zoneId: 1, status: 'ACTIVE',
+    imageStorageKey: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfLo7LEgxj4KFLC71aiE82Le9UpS6brWkbS-CumiwJhQ&s=10',
+    internalName: 'Hồ Sen Đầm Sen',
+    t: { vi: 'Hồ Sen Đầm Sen', en: 'Lotus Pond', ko: '연꽃 연못' },
+    c: { vi: 'Hồ Sen là biểu tượng thơ mộng...', en: 'The Lotus Pond...', ko: '연꽃 연못은...' }
+  }
+];
+
+function switchLangTab(lang) {
+  document.querySelectorAll('.lang-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  
+  event.target.classList.add('active');
+  document.getElementById('tab-' + lang).classList.add('active');
+}
+
+// 1. TẢI DANH SÁCH (Hỗ trợ tự động fallback sang LocalStorage nếu lỗi Backend)
+async function loadPoisData() {
+  const statusEl = document.getElementById('backendStatus');
+  try {
+    const res = await fetch(`${ADMIN_API_BASE}/pois`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include'
+    });
+    
+    if (!res.ok) throw new Error('API Error');
+    
+    adminPois = await res.json();
+    isBackendConnected = true;
+    statusEl.textContent = '🟢 Đã kết nối Spring Boot Backend';
+    statusEl.style.background = 'rgba(76, 175, 80, 0.3)';
+  } catch (err) {
+    isBackendConnected = false;
+    statusEl.textContent = '🟡 Dùng LocalStorage (Backend chưa sẵn sàng)';
+    statusEl.style.background = 'rgba(255, 152, 0, 0.3)';
+    
+    const local = localStorage.getItem('dam_sen_admin_pois');
+    adminPois = local ? JSON.parse(local) : DEFAULT_POIS;
+  }
+  renderTable();
+}
+
+function renderTable() {
+  const tbody = document.getElementById('poiTableBody');
+  if (!adminPois.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có điểm tham quan nào.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = adminPois.map(p => `
+    <tr>
+      <td><img src="${p.imageStorageKey || 'https://via.placeholder.com/44'}" class="poi-thumb"></td>
+      <td>
+        <b>${p.code || p.id}</b><br>
+        <span>${p.internalName || p.title || 'Điểm tham quan'}</span>
+      </td>
+      <td><small>${p.latitude}, ${p.longitude}</small></td>
+      <td>
+        <span class="status-dot ${p.status === 'ACTIVE' ? 'active' : 'inactive'}"></span>
+        ${p.status || 'ACTIVE'}
+      </td>
+      <td style="text-align:right;">
+        <button class="btn btn-edit btn-sm" onclick="editPoi('${p.id || p.code}')">Sửa</button>
+        <button class="btn btn-delete btn-sm" onclick="deletePoi('${p.id || p.code}')">Xóa</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// 2. LƯU HOẶC CẬP NHẬT ĐIỂM
+async function handleFormSubmit(e) {
+  e.preventDefault();
+
+  const poiId = document.getElementById('currentPoiDbId').value;
+  const lat = parseFloat(document.getElementById('poiLat').value);
+  const lon = parseFloat(document.getElementById('poiLon').value);
+
+  const payload = {
+    code: document.getElementById('poiCode').value.trim(),
+    zoneId: parseInt(document.getElementById('poiZone').value),
+    internalName: document.getElementById('title_vi').value.trim(),
+    latitude: lat,
+    longitude: lon,
+    status: document.getElementById('poiActive').checked ? 'ACTIVE' : 'INACTIVE',
+    imageStorageKey: document.getElementById('poiImg').value.trim(),
+    t: { vi: document.getElementById('title_vi').value, en: document.getElementById('title_en').value, ko: document.getElementById('title_ko').value },
+    c: { vi: document.getElementById('desc_vi').value, en: document.getElementById('desc_en').value, ko: document.getElementById('desc_ko').value }
+  };
+
+  if (isBackendConnected) {
+    try {
+      const url = poiId ? `${ADMIN_API_BASE}/pois/${poiId}` : `${ADMIN_API_BASE}/pois`;
+      await fetch(url, {
+        method: poiId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+      });
+    } catch (err) {
+      console.warn("Lỗi đồng bộ Backend, lưu tạm LocalStorage");
+    }
+  }
+
+  // Cập nhật bộ nhớ cục bộ
+  if (poiId) {
+    const idx = adminPois.findIndex(p => p.id == poiId || p.code == poiId);
+    if (idx >= 0) adminPois[idx] = { ...adminPois[idx], ...payload };
+  } else {
+    payload.id = 'P' + Date.now().toString().slice(-4);
+    adminPois.push(payload);
+  }
+  
+  localStorage.setItem('dam_sen_admin_pois', JSON.stringify(adminPois));
+  alert("💾 Lưu thông tin thành công!");
+  renderTable();
+  resetForm();
+}
+
+async function deletePoi(id) {
+  if (!confirm(`Bạn có chắc chắn muốn xóa điểm ${id} không?`)) return;
+
+  if (isBackendConnected) {
+    try { await fetch(`${ADMIN_API_BASE}/pois/${id}`, { method: 'DELETE', credentials: 'include' }); } catch (e) {}
+  }
+
+  adminPois = adminPois.filter(p => p.id != id && p.code != id);
+  localStorage.setItem('dam_sen_admin_pois', JSON.stringify(adminPois));
+  renderTable();
+}
+
+function editPoi(id) {
+  const p = adminPois.find(item => item.id == id || item.code == id);
+  if (!p) return;
+
+  document.getElementById('currentPoiDbId').value = p.id || '';
+  document.getElementById('poiCode').value = p.code || '';
+  document.getElementById('poiCode').readOnly = true;
+  document.getElementById('poiZone').value = p.zoneId || 1;
+  document.getElementById('poiLat').value = p.latitude || '';
+  document.getElementById('poiLon').value = p.longitude || '';
+  document.getElementById('poiImg').value = p.imageStorageKey || '';
+  document.getElementById('poiActive').checked = p.status === 'ACTIVE';
+
+  document.getElementById('title_vi').value = p.t?.vi || p.internalName || '';
+  document.getElementById('desc_vi').value = p.c?.vi || '';
+  document.getElementById('title_en').value = p.t?.en || '';
+  document.getElementById('desc_en').value = p.c?.en || '';
+  document.getElementById('title_ko').value = p.t?.ko || '';
+  document.getElementById('desc_ko').value = p.c?.ko || '';
+
+  document.getElementById('formTitle').textContent = 'Chỉnh sửa điểm: ' + (p.code || p.id);
+  document.getElementById('btnSubmit').textContent = '🔄 Cập nhật thay đổi';
+  document.getElementById('btnCancel').style.display = 'block';
+}
+
+function resetForm() {
+  document.getElementById('poiForm').reset();
+  document.getElementById('currentPoiDbId').value = '';
+  document.getElementById('poiCode').readOnly = false;
+  document.getElementById('formTitle').textContent = 'Thêm điểm mới';
+  document.getElementById('btnSubmit').textContent = '💾 Lưu điểm tham quan';
+  document.getElementById('btnCancel').style.display = 'none';
+}
+
+// Các hàm Workflow giả lập / Gọi API thực tế
+async function apiApproveVietnamese() { alert("🔒 Đã chốt bản tiếng Việt thành công!"); }
+async function apiTriggerTranslation() { alert("🤖 Đã gửi Job dịch tự động bất đồng bộ sang EN/KO thành công!"); }
+async function apiGenerateTts() { alert("🔊 Đã khởi tạo tác vụ tổng hợp giọng nói TTS thành công!"); }
+async function apiPublishContent() { alert("🚀 Xuất bản nội dung thành công!"); }
+
+loadPoisData();
+</script>
+
+</body>
+</html>
