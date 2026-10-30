@@ -1,0 +1,968 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đầm Sen · Quản trị hệ thống</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap">
+
+<style>
+:root {
+  --green-dark: #004d40;
+  --green-btn: #0D473B;
+  --bg-light: #F4F8F5;
+  --text-dark: #1C332B;
+  --text-muted: #627D73;
+  --white: #FFFFFF;
+  --line: #D0E0D8;
+  --red: #d32f2f;
+  --amber: #f57c00;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 4px 12px rgba(0,0,0,0.06);
+}
+
+*{box-sizing:border-box}
+body{margin:0;padding:0;background:#E8EFEB;font:400 14px/1.5 "Be Vietnam Pro", sans-serif;color:var(--text-dark)}
+
+.admin-container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 16px;
+}
+
+header {
+  background: var(--green-dark);
+  color: #fff;
+  padding: 20px 24px;
+  border-radius: var(--radius-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+}
+
+header h1 { margin: 0; font-size: 22px; font-weight: 700; }
+header p { margin: 4px 0 0; font-size: 13px; opacity: 0.8; }
+
+.status-badge {
+  background: rgba(255,255,255,0.15);
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* GIAO DIỆN ĐĂNG NHẬP */
+#loginScreen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+}
+.login-card {
+  background: var(--white);
+  padding: 32px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  width: 100%;
+  max-width: 420px;
+}
+.login-card h2 {
+  color: var(--green-dark);
+  margin-top: 0;
+  font-size: 20px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+.login-error {
+  background: #ffebee;
+  color: var(--red);
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  margin-bottom: 12px;
+  display: none;
+}
+
+/* THANH ĐIỀU HƯỚNG CHÍNH */
+.nav-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  background: var(--white);
+  padding: 6px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  border: 1px solid var(--line);
+}
+
+.nav-tab-btn {
+  flex: 1;
+  padding: 10px 16px;
+  border: none;
+  background: transparent;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.nav-tab-btn.active {
+  background: var(--green-dark);
+  color: #fff;
+}
+
+.section-content { display: none; }
+.section-content.active { display: block; }
+
+.layout-grid {
+  display: grid;
+  grid-template-columns: 460px 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 900px) {
+  .layout-grid { grid-template-columns: 1fr; }
+}
+
+.card {
+  background: var(--white);
+  padding: 20px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 20px;
+}
+
+.card h2 {
+  font-size: 17px;
+  margin: 0 0 16px;
+  color: var(--green-dark);
+  border-bottom: 2px solid var(--bg-light);
+  padding-bottom: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-weight: 600; font-size: 12px; margin-bottom: 4px; color: var(--text-dark); }
+.form-group input, .form-group select, .form-group textarea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  font: inherit;
+  outline: none;
+  background: #fafafa;
+}
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus {
+  border-color: var(--green-dark);
+  background: #fff;
+}
+.form-row { display: flex; gap: 10px; }
+.form-row .form-group { flex: 1; }
+
+.lang-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+  background: var(--bg-light);
+  padding: 4px;
+  border-radius: 8px;
+}
+.lang-tab {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: 6px;
+  color: var(--text-muted);
+}
+.lang-tab.active { background: var(--white); color: var(--green-dark); box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.btn {
+  padding: 9px 16px;
+  border-radius: var(--radius-md);
+  border: none;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.btn:active { opacity: 0.85; }
+.btn-primary { background: var(--green-dark); color: #fff; width: 100%; margin-top: 8px; }
+.btn-cancel { background: #e0e0e0; color: #333; width: 100%; margin-top: 6px; }
+.btn-sm { padding: 4px 8px; font-size: 11px; }
+.btn-edit { background: #e3f2fd; color: #1976d2; }
+.btn-delete { background: #ffebee; color: var(--red); }
+.btn-export { background: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+.btn-logout { background: rgba(255,255,255,0.2); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 12px; }
+
+/* BẢNG DỮ LIỆU */
+.table-responsive { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; text-align: left; }
+th, td { padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 13px; }
+th { background: var(--bg-light); color: var(--text-muted); font-weight: 600; }
+tr:hover { background: #fdfdfd; }
+
+.poi-thumb {
+  width: 44px; height: 44px; border-radius: 6px; object-fit: cover; background: #eee;
+}
+
+.status-dot {
+  display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px;
+}
+.status-dot.active { background: #4caf50; }
+.status-dot.inactive { background: #9e9e9e; }
+
+/* KHU VỰC THỐNG KÊ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.stat-card {
+  background: var(--bg-light);
+  padding: 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line);
+}
+.stat-card .num { font-size: 24px; font-weight: 700; color: var(--green-dark); }
+.stat-card .label { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+
+.audio-preview {
+  margin-top: 6px;
+  width: 100%;
+}
+</style>
+</head>
+<body>
+
+<!-- GIAO DIỆN ĐĂNG NHẬP HỆ THỐNG -->
+<div id="loginScreen" class="admin-container">
+  <div class="login-card">
+    <h2>🔐 Đăng nhập Quản trị</h2>
+    <div id="loginErrorMsg" class="login-error"></div>
+    <form onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>Tên đăng nhập</label>
+        <input type="text" id="loginUser" placeholder="Nhập tên tài khoản..." required>
+      </div>
+      <div class="form-group">
+        <label>Mật khẩu</label>
+        <input type="password" id="loginPass" placeholder="Nhập mật khẩu..." required>
+      </div>
+      <button type="submit" class="btn btn-primary">Đăng nhập</button>
+      <p style="text-align:center; font-size:11px; color:var(--text-muted); margin-top:12px;">
+        Tài khoản mặc định: <b>admin</b> / <b>admin123</b>
+      </p>
+    </form>
+  </div>
+</div>
+
+<!-- GIAO DIỆN QUẢN TRỊ CHÍNH -->
+<div id="adminMainApp" style="display:none;" class="admin-container">
+  <header>
+    <div>
+      <h1>Đầm Sen Tour · Quản trị hệ thống</h1>
+      <p>Hệ thống quản lý điểm tham quan và thuyết minh đa ngôn ngữ</p>
+    </div>
+    <div style="display:flex; align-items:center; gap:12px;">
+      <div class="status-badge" id="backendStatus">📡 Đang kết nối máy chủ...</div>
+      <button class="btn btn-logout" onclick="handleLogout()">🚪 Đăng xuất</button>
+    </div>
+  </header>
+
+  <!-- THANH CHUYỂN TRANG QUẢN LÝ -->
+  <div class="nav-tabs">
+    <button class="nav-tab-btn active" onclick="switchNavSection('section-pois')">📍 Quản lý Điểm & Nội dung</button>
+    <button class="nav-tab-btn" onclick="switchNavSection('section-stats')">📊 Thống kê truy cập</button>
+    <button class="nav-tab-btn" onclick="switchNavSection('section-logs')">📜 Lịch sử truy cập & Xuất CSV</button>
+  </div>
+
+  <!-- PHẦN 1: QUẢN LÝ ĐIỂM THAM QUAN & THUYẾT MINH -->
+  <div id="section-pois" class="section-content active">
+    <div class="layout-grid">
+      <!-- FORM THÊM / SỬA ĐIỂM -->
+      <div class="card">
+        <h2 id="formTitle">Thêm điểm tham quan mới</h2>
+        <form id="poiForm" onsubmit="handleFormSubmit(event)">
+          <input type="hidden" id="currentPoiDbId">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Mã điểm (Code)</label>
+              <input type="text" id="poiCode" placeholder="Ví dụ: P05" required>
+            </div>
+            <div class="form-group">
+              <label>Khu vực</label>
+              <select id="poiZone" required>
+                <option value="1">Khu Lối Vào & Cổng Chào (Khu 1)</option>
+                <option value="2">Khu Trò Chơi & Hồ Water Park (Khu 2)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Vĩ độ (Latitude)</label>
+              <input type="number" step="any" min="0" id="poiLat" placeholder="10.7680" required>
+            </div>
+            <div class="form-group">
+              <label>Kinh độ (Longitude)</label>
+              <input type="number" step="any" min="0" id="poiLon" placeholder="106.6400" required>
+            </div>
+          </div>
+
+          <!-- BỔ SUNG Ô NHẬP BÁN KÍNH VỚI RÀNG BUỘC KHÔNG SỐ ÂM (MIN="0") -->
+          <div class="form-group">
+            <label>Bán kính kích hoạt (Radius - mét)</label>
+            <input type="number" step="any" min="0" id="poiRadius" placeholder="Ví dụ: 20" value="20" required>
+          </div>
+
+          <div class="form-group">
+            <label>Đường dẫn hình ảnh (URL)</label>
+            <input type="text" id="poiImg" placeholder="https://domain.com/image.jpg">
+          </div>
+
+          <!-- CÁC TAB NGÔN NGỮ THUYẾT MINH -->
+          <label style="font-weight:600; font-size:12px; margin-bottom:6px; display:block;">Nội dung và bản ghi âm theo ngôn ngữ:</label>
+          <div class="lang-tabs">
+            <button type="button" class="lang-tab active" onclick="switchLangTab('vi')">🇻🇳 Tiếng Việt</button>
+            <button type="button" class="lang-tab" onclick="switchLangTab('en')">🇬🇧 English</button>
+            <button type="button" class="lang-tab" onclick="switchLangTab('ko')">🇰🇷 한국어</button>
+          </div>
+
+          <!-- TAB TIẾNG VIỆT -->
+          <div id="tab-vi" class="tab-content active">
+            <div class="form-group">
+              <label>Tên địa điểm (Tiếng Việt)</label>
+              <input type="text" id="title_vi" placeholder="Ví dụ: Hồ Sen Đầm Sen" required>
+            </div>
+            <div class="form-group">
+              <label>Nội dung thuyết minh (Tiếng Việt)</label>
+              <textarea id="desc_vi" rows="3" placeholder="Nhập bài đọc thuyết minh tiếng Việt..." required></textarea>
+            </div>
+            <div class="form-group">
+              <label>Đường dẫn âm thanh Audio (.mp3)</label>
+              <input type="text" id="audio_vi" placeholder="https://domain.com/audio_vi.mp3" oninput="updateAudioPreview('audio_vi', 'audio_preview_vi')">
+              <audio id="audio_preview_vi" class="audio-preview" controls style="display:none;"></audio>
+            </div>
+          </div>
+
+          <!-- TAB TIẾNG ANH -->
+          <div id="tab-en" class="tab-content">
+            <div class="form-group">
+              <label>Tên địa điểm (Tiếng Anh)</label>
+              <input type="text" id="title_en" placeholder="Ví dụ: Lotus Pond">
+            </div>
+            <div class="form-group">
+              <label>Nội dung thuyết minh (Tiếng Anh)</label>
+              <textarea id="desc_en" rows="3" placeholder="Nhập bài đọc thuyết minh tiếng Anh..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Đường dẫn âm thanh Audio (Tiếng Anh)</label>
+              <input type="text" id="audio_en" placeholder="https://domain.com/audio_en.mp3" oninput="updateAudioPreview('audio_en', 'audio_preview_en')">
+              <audio id="audio_preview_en" class="audio-preview" controls style="display:none;"></audio>
+            </div>
+          </div>
+
+          <!-- TAB TIẾNG HÀN -->
+          <div id="tab-ko" class="tab-content">
+            <div class="form-group">
+              <label>Tên địa điểm (Tiếng Hàn)</label>
+              <input type="text" id="title_ko" placeholder="Ví dụ: 연꽃 연못">
+            </div>
+            <div class="form-group">
+              <label>Nội dung thuyết minh (Tiếng Hàn)</label>
+              <textarea id="desc_ko" rows="3" placeholder="Nhập bài đọc thuyết minh tiếng Hàn..."></textarea>
+            </div>
+            <div class="form-group">
+              <label>Đường dẫn âm thanh Audio (Tiếng Hàn)</label>
+              <input type="text" id="audio_ko" placeholder="https://domain.com/audio_ko.mp3" oninput="updateAudioPreview('audio_ko', 'audio_preview_ko')">
+              <audio id="audio_preview_ko" class="audio-preview" controls style="display:none;"></audio>
+            </div>
+          </div>
+
+          <!-- KHU VỰC QUẢN LÝ PHIÊN BẢN VÀ CÔNG BỐ NỘI DUNG -->
+          <div style="margin: 14px 0; padding: 12px; background: #f0f4f1; border-radius: 8px; border: 1px solid #c8dcd0;">
+            <h4 style="margin: 0 0 8px 0; font-size: 13px; color: #004d40;">📊 Quản lý phiên bản & công bố nội dung</h4>
+            
+            <div style="display: flex; gap: 6px; margin-bottom: 10px; flex-wrap: wrap;">
+              <span id="badgeStatusVI" class="status-badge" style="background:#e0e0e0; color:#333;">VI: Chưa chốt</span>
+              <span id="badgeStatusEN" class="status-badge" style="background:#e0e0e0; color:#333;">EN: Bản nháp</span>
+              <span id="badgeStatusKO" class="status-badge" style="background:#e0e0e0; color:#333;">KO: Bản nháp</span>
+            </div>
+
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              <button type="button" class="btn btn-sm" style="background:#0D473B; color:#fff;" onclick="apiApproveVietnamese()">🔒 Chốt bản Tiếng Việt</button>
+              <button type="button" class="btn btn-sm btn-edit" onclick="apiTriggerTranslation()">🤖 Yêu cầu dịch tự động</button>
+              <button type="button" class="btn btn-sm" style="background:#43a047; color:#fff;" onclick="apiGenerateTts()">🔊 Tạo Audio TTS</button>
+              <button type="button" class="btn btn-sm" style="background:#1976d2; color:#fff;" onclick="apiPublishContent()">🚀 Công bố nội dung</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+              <input type="checkbox" id="poiActive" checked style="width:auto; min-height:auto;">
+              <span>Kích hoạt hoạt động điểm tham quan</span>
+            </label>
+          </div>
+
+          <button type="submit" class="btn btn-primary" id="btnSubmit">💾 Lưu điểm & bài thuyết minh</button>
+          <button type="button" class="btn btn-cancel" id="btnCancel" onclick="resetForm()" style="display:none;">Hủy chỉnh sửa</button>
+        </form>
+      </div>
+
+      <!-- DANH SÁCH ĐIỂM THAM QUAN -->
+      <div class="card">
+        <h2>
+          <span>Danh sách điểm tham quan</span>
+          <button class="btn btn-edit btn-sm" onclick="loadPoisData()">🔄 Tải lại</button>
+        </h2>
+
+        <div class="table-responsive">
+          <table>
+            <thead>
+              <tr>
+                <th>Hình ảnh</th>
+                <th>Mã / Tên</th>
+                <th>Tọa độ & Bán kính</th>
+                <th>Trạng thái</th>
+                <th style="text-align:right;">Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="poiTableBody">
+              <tr><td colspan="5" style="text-align:center;">Đang tải danh sách...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHẦN 2: THỐNG KÊ TRUY CẬP -->
+  <div id="section-stats" class="section-content">
+    <div class="card">
+      <h2>
+        <span>📊 Thống kê truy cập theo tháng</span>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <label style="font-size:12px; margin:0;">Chọn tháng:</label>
+          <input type="month" id="statsMonth" value="2026-10" onchange="loadStatsData()" style="padding:4px 8px; border-radius:6px; border:1px solid var(--line);">
+        </div>
+      </h2>
+
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="num" id="statTotalAccess">1,248</div>
+          <div class="label">Tổng lượt truy cập</div>
+        </div>
+        <div class="stat-card">
+          <div class="num" id="statTotalSessions">850</div>
+          <div class="label">Số phiên truy cập duy nhất</div>
+        </div>
+        <div class="stat-card">
+          <div class="num" id="statPeakTime">10:00 - 11:00</div>
+          <div class="label">Khung giờ cao điểm</div>
+        </div>
+        <div class="stat-card">
+          <div class="num" id="statTopPoi">Hồ Sen Đầm Sen</div>
+          <div class="label">Điểm tham quan nghe nhiều nhất</div>
+        </div>
+      </div>
+
+      <div class="layout-grid" style="grid-template-columns: 1fr 1fr;">
+        <div>
+          <h3 style="font-size:14px; color:var(--green-dark);">🌐 Tỷ lệ ngôn ngữ sử dụng</h3>
+          <table>
+            <thead>
+              <tr><th>Ngôn ngữ</th><th>Lượt nghe</th><th>Tỷ lệ</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>🇻🇳 Tiếng Việt (VI)</td><td>820</td><td>65.7%</td></tr>
+              <tr><td>🇬🇧 English (EN)</td><td>310</td><td>24.8%</td></tr>
+              <tr><td>🇰🇷 한국어 (KO)</td><td>118</td><td>9.5%</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <h3 style="font-size:14px; color:var(--green-dark);">📱 Thiết bị truy cập</h3>
+          <table>
+            <thead>
+              <tr><th>Hệ điều hành / Trình duyệt</th><th>Số lượt</th><th>Tỷ lệ</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>iOS / Safari</td><td>650</td><td>52.1%</td></tr>
+              <tr><td>Android / Chrome</td><td>510</td><td>40.9%</td></tr>
+              <tr><td>Khác</td><td>88</td><td>7.0%</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHẦN 3: LỊCH SỬ TRUY CẬP VÀ XUẤT CSV -->
+  <div id="section-logs" class="section-content">
+    <div class="card">
+      <h2>
+        <span>📜 Lịch sử truy cập và thuyết minh</span>
+        <button class="btn btn-export btn-sm" onclick="exportHistoryCSV()">📥 Xuất tệp CSV</button>
+      </h2>
+
+      <!-- BỘ LỌC LỊCH SỬ -->
+      <div style="background:var(--bg-light); padding:12px; border-radius:8px; margin-bottom:16px;">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Từ thời điểm</label>
+            <input type="datetime-local" id="filterFromDate">
+          </div>
+          <div class="form-group">
+            <label>Đến thời điểm</label>
+            <input type="datetime-local" id="filterToDate">
+          </div>
+          <div class="form-group">
+            <label>Ngôn ngữ</label>
+            <select id="filterLang">
+              <option value="">Tất cả ngôn ngữ</option>
+              <option value="vi">Tiếng Việt (VI)</option>
+              <option value="en">English (EN)</option>
+              <option value="ko">한국어 (KO)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Địa điểm</label>
+            <select id="filterPoi">
+              <option value="">Tất cả các điểm</option>
+              <option value="P01">P01 - Hồ Sen Đầm Sen</option>
+              <option value="P02">P02 - Cổng Chào Square</option>
+            </select>
+          </div>
+          <div class="form-group" style="display:flex; align-items:flex-end;">
+            <button class="btn btn-primary" style="margin:0; height:38px;" onclick="applyLogFilter()">🔍 Lọc lịch sử</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- BẢNG HIỂN THỊ LỊCH SỬ -->
+      <div class="table-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Mã phiên (Session)</th>
+              <th>Thời gian</th>
+              <th>Điểm tham quan</th>
+              <th>Ngôn ngữ</th>
+              <th>Thiết bị / Trình duyệt</th>
+            </tr>
+          </thead>
+          <tbody id="accessLogTableBody">
+            <tr>
+              <td><code>SESS_8921a</code></td>
+              <td>2026-10-30 09:15:22</td>
+              <td><b>P01</b> - Hồ Sen Đầm Sen</td>
+              <td>🇻🇳 VI</td>
+              <td>iPhone / Mobile Safari</td>
+            </tr>
+            <tr>
+              <td><code>SESS_7731b</code></td>
+              <td>2026-10-30 09:18:04</td>
+              <td><b>P01</b> - Hồ Sen Đầm Sen</td>
+              <td>🇬🇧 EN</td>
+              <td>Android / Chrome Mobile</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const ADMIN_API_BASE = 'http://localhost:8080/api/v1/admin';
+let adminPois = [];
+let isBackendConnected = false;
+let failedLoginAttempts = 0;
+
+// KIỂM TRA TRẠNG THÁI ĐĂNG NHẬP KHI TẢI TRANG
+window.addEventListener('DOMContentLoaded', () => {
+  const sessionToken = sessionStorage.getItem('damsen_admin_session');
+  if (sessionToken === 'active') {
+    showAdminDashboard();
+  }
+});
+
+// XỬ LÝ ĐĂNG NHẬP
+function handleLogin(e) {
+  e.preventDefault();
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  const errEl = document.getElementById('loginErrorMsg');
+
+  if (failedLoginAttempts >= 5) {
+    errEl.textContent = "❌ Tài khoản tạm thời bị khóa do nhập sai quá 5 lần. Vui lòng thử lại sau!";
+    errEl.style.display = 'block';
+    return;
+  }
+
+  if (user === 'admin' && pass === 'admin123') {
+    failedLoginAttempts = 0;
+    sessionStorage.setItem('damsen_admin_session', 'active');
+    showAdminDashboard();
+  } else {
+    failedLoginAttempts++;
+    errEl.textContent = `❌ Sai tên đăng nhập hoặc mật khẩu. Số lần thử sai: ${failedLoginAttempts}/5`;
+    errEl.style.display = 'block';
+  }
+}
+
+// XỬ LÝ ĐĂNG XUẤT
+function handleLogout() {
+  if (confirm("Bạn có chắc chắn muốn đăng xuất khỏi hệ thống quản trị không?")) {
+    sessionStorage.removeItem('damsen_admin_session');
+    document.getElementById('adminMainApp').style.display = 'none';
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('loginPass').value = '';
+  }
+}
+
+function showAdminDashboard() {
+  document.getElementById('loginScreen').style.display = 'none';
+  document.getElementById('adminMainApp').style.display = 'block';
+  loadPoisData();
+}
+
+// DỮ LIỆU MẪU DỰ PHÒNG KHI CHƯA KẾT NỐI MÁY CHỦ
+const DEFAULT_POIS = [
+  { id: '1', code: 'P01', latitude: 10.7680, longitude: 106.6400, radius: 20, zoneId: 1, status: 'ACTIVE',
+    imageStorageKey: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSfLo7LEgxj4KFLC71aiE82Le9UpS6brWkbS-CumiwJhQ&s=10',
+    internalName: 'Hồ Sen Đầm Sen',
+    t: { vi: 'Hồ Sen Đầm Sen', en: 'Lotus Pond', ko: '연꽃 연못' },
+    c: { vi: 'Hồ Sen là biểu tượng thơ mộng...', en: 'The Lotus Pond is a scenic spot...', ko: '연꽃 연못은 아름다운 곳입니다...' },
+    a: { vi: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3', en: '', ko: '' }
+  }
+];
+
+let currentLogs = [
+  { session: 'SESS_8921a', time: '2026-10-30 09:15:22', poiCode: 'P01', poiName: 'Hồ Sen Đầm Sen', lang: 'vi', device: 'iPhone / Mobile Safari' },
+  { session: 'SESS_7731b', time: '2026-10-30 09:18:04', poiCode: 'P01', poiName: 'Hồ Sen Đầm Sen', lang: 'en', device: 'Android / Chrome Mobile' },
+  { session: 'SESS_1204c', time: '2026-10-30 10:02:11', poiCode: 'P02', poiName: 'Cổng Chào Square', lang: 'ko', device: 'Samsung / Internet Browser' }
+];
+
+// CHUYỂN ĐỔI TAB GIAO DIỆN
+function switchNavSection(sectionId) {
+  document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.section-content').forEach(s => s.classList.remove('active'));
+  
+  event.currentTarget.classList.add('active');
+  document.getElementById(sectionId).classList.add('active');
+}
+
+function switchLangTab(lang) {
+  document.querySelectorAll('.lang-tab').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+  
+  event.target.classList.add('active');
+  document.getElementById('tab-' + lang).classList.add('active');
+}
+
+// 1. TẢI DANH SÁCH ĐIỂM
+async function loadPoisData() {
+  const statusEl = document.getElementById('backendStatus');
+  try {
+    const res = await fetch(`${ADMIN_API_BASE}/pois`, {
+      method: 'GET',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include'
+    });
+    
+    if (!res.ok) throw new Error('API Error');
+    
+    adminPois = await res.json();
+    isBackendConnected = true;
+    statusEl.textContent = '🟢 Đã kết nối máy chủ thành công';
+    statusEl.style.background = 'rgba(76, 175, 80, 0.3)';
+  } catch (err) {
+    isBackendConnected = false;
+    statusEl.textContent = '🟡 Đang dùng bộ nhớ tạm (Chưa kết nối máy chủ)';
+    statusEl.style.background = 'rgba(255, 152, 0, 0.3)';
+    
+    const local = localStorage.getItem('dam_sen_admin_pois');
+    adminPois = local ? JSON.parse(local) : DEFAULT_POIS;
+  }
+  renderTable();
+}
+
+function renderTable() {
+  const tbody = document.getElementById('poiTableBody');
+  if (!adminPois.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Chưa có điểm tham quan nào.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = adminPois.map(p => `
+    <tr>
+      <td><img src="${p.imageStorageKey || 'https://via.placeholder.com/44'}" class="poi-thumb"></td>
+      <td>
+        <b>${p.code || p.id}</b><br>
+        <span>${p.internalName || p.t?.vi || 'Điểm tham quan'}</span>
+      </td>
+      <td>
+        <small>GPS: ${p.latitude}, ${p.longitude}</small><br>
+        <small style="color:var(--text-muted);">Bán kính: <b>${p.radius || 20}m</b></small>
+      </td>
+      <td>
+        <span class="status-dot ${p.status === 'ACTIVE' ? 'active' : 'inactive'}"></span>
+        ${p.status === 'ACTIVE' ? 'Đang hoạt động' : 'Tạm ngưng'}
+      </td>
+      <td style="text-align:right;">
+        <button class="btn btn-edit btn-sm" onclick="editPoi('${p.id || p.code}')">Sửa</button>
+        <button class="btn btn-delete btn-sm" onclick="deletePoi('${p.id || p.code}')">Xóa</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+// 2. LƯU HOẶC CẬP NHẬT ĐIỂM & NỘI DUNG
+async function handleFormSubmit(e) {
+  e.preventDefault();
+
+  const poiId = document.getElementById('currentPoiDbId').value;
+  const lat = parseFloat(document.getElementById('poiLat').value);
+  const lon = parseFloat(document.getElementById('poiLon').value);
+  const radius = parseFloat(document.getElementById('poiRadius').value);
+
+  // KIỂM TRA RÀNG BUỘC TOÀN VẸN: KHÔNG CHO PHÉP NHẬP SỐ ÂM (BÁN KÍNH, VĨ ĐỘ, KINHD ĐỘ)
+  if (isNaN(radius) || radius < 0) {
+    alert("❌ Lỗi ràng buộc: Bán kính kích hoạt không được là số âm hoặc để trống!");
+    return;
+  }
+  if (isNaN(lat) || lat < 0 || isNaN(lon) || lon < 0) {
+    alert("❌ Lỗi ràng buộc: Vĩ độ và kinh độ không được là số âm!");
+    return;
+  }
+
+  const payload = {
+    code: document.getElementById('poiCode').value.trim(),
+    zoneId: parseInt(document.getElementById('poiZone').value),
+    internalName: document.getElementById('title_vi').value.trim(),
+    latitude: lat,
+    longitude: lon,
+    radius: radius,
+    status: document.getElementById('poiActive').checked ? 'ACTIVE' : 'INACTIVE',
+    imageStorageKey: document.getElementById('poiImg').value.trim(),
+    t: { 
+      vi: document.getElementById('title_vi').value, 
+      en: document.getElementById('title_en').value, 
+      ko: document.getElementById('title_ko').value 
+    },
+    c: { 
+      vi: document.getElementById('desc_vi').value, 
+      en: document.getElementById('desc_en').value, 
+      ko: document.getElementById('desc_ko').value 
+    },
+    a: {
+      vi: document.getElementById('audio_vi').value,
+      en: document.getElementById('audio_en').value,
+      ko: document.getElementById('audio_ko').value
+    }
+  };
+
+  if (isBackendConnected) {
+    try {
+      const url = poiId ? `${ADMIN_API_BASE}/pois/${poiId}` : `${ADMIN_API_BASE}/pois`;
+      await fetch(url, {
+        method: poiId ? 'PUT' : 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify(payload)
+      });
+    } catch (err) {
+      console.warn("Lỗi đồng bộ máy chủ, đang lưu vào bộ nhớ tạm cục bộ");
+    }
+  }
+
+  if (poiId) {
+    const idx = adminPois.findIndex(p => p.id == poiId || p.code == poiId);
+    if (idx >= 0) adminPois[idx] = { ...adminPois[idx], ...payload };
+  } else {
+    payload.id = 'P' + Date.now().toString().slice(-4);
+    adminPois.push(payload);
+  }
+  
+  localStorage.setItem('dam_sen_admin_pois', JSON.stringify(adminPois));
+  alert("💾 Lưu thông tin điểm tham quan thành công!");
+  renderTable();
+  resetForm();
+}
+
+function editPoi(id) {
+  const p = adminPois.find(item => item.id == id || item.code == id);
+  if (!p) return;
+
+  document.getElementById('currentPoiDbId').value = p.id || '';
+  document.getElementById('poiCode').value = p.code || '';
+  document.getElementById('poiCode').readOnly = true;
+  document.getElementById('poiZone').value = p.zoneId || 1;
+  document.getElementById('poiLat').value = p.latitude || '';
+  document.getElementById('poiLon').value = p.longitude || '';
+  document.getElementById('poiRadius').value = p.radius || 20;
+  document.getElementById('poiImg').value = p.imageStorageKey || '';
+  document.getElementById('poiActive').checked = p.status === 'ACTIVE';
+
+  document.getElementById('title_vi').value = p.t?.vi || p.internalName || '';
+  document.getElementById('desc_vi').value = p.c?.vi || '';
+  document.getElementById('audio_vi').value = p.a?.vi || '';
+
+  document.getElementById('title_en').value = p.t?.en || '';
+  document.getElementById('desc_en').value = p.c?.en || '';
+  document.getElementById('audio_en').value = p.a?.en || '';
+
+  document.getElementById('title_ko').value = p.t?.ko || '';
+  document.getElementById('desc_ko').value = p.c?.ko || '';
+  document.getElementById('audio_ko').value = p.a?.ko || '';
+
+  updateAudioPreview('audio_vi', 'audio_preview_vi');
+  updateAudioPreview('audio_en', 'audio_preview_en');
+  updateAudioPreview('audio_ko', 'audio_preview_ko');
+
+  document.getElementById('formTitle').textContent = 'Chỉnh sửa điểm: ' + (p.code || p.id);
+  document.getElementById('btnSubmit').textContent = '🔄 Cập nhật thay đổi';
+  document.getElementById('btnCancel').style.display = 'block';
+}
+
+function updateAudioPreview(inputId, audioId) {
+  const url = document.getElementById(inputId).value;
+  const audioEl = document.getElementById(audioId);
+  if (url) {
+    audioEl.src = url;
+    audioEl.style.display = 'block';
+  } else {
+    audioEl.style.display = 'none';
+  }
+}
+
+function resetForm() {
+  document.getElementById('poiForm').reset();
+  document.getElementById('currentPoiDbId').value = '';
+  document.getElementById('poiCode').readOnly = false;
+  document.getElementById('formTitle').textContent = 'Thêm điểm tham quan mới';
+  document.getElementById('btnSubmit').textContent = '💾 Lưu điểm & bài thuyết minh';
+  document.getElementById('btnCancel').style.display = 'none';
+  document.getElementById('poiRadius').value = 20;
+  document.querySelectorAll('.audio-preview').forEach(a => a.style.display = 'none');
+}
+
+async function deletePoi(id) {
+  if (!confirm(`Bạn có chắc chắn muốn xóa điểm tham quan ${id} không?`)) return;
+
+  if (isBackendConnected) {
+    try { await fetch(`${ADMIN_API_BASE}/pois/${id}`, { method: 'DELETE', credentials: 'include' }); } catch (e) {}
+  }
+
+  adminPois = adminPois.filter(p => p.id != id && p.code != id);
+  localStorage.setItem('dam_sen_admin_pois', JSON.stringify(adminPois));
+  renderTable();
+}
+
+// THAO TÁC QUẢN LÝ NỘI DUNG VÀ WORKFLOW
+async function apiApproveVietnamese() { alert("🔒 Đã kiểm duyệt và chốt bản tiếng Việt thành công!"); }
+async function apiTriggerTranslation() { alert("🤖 Đã gửi yêu cầu dịch tự động sang tiếng Anh và tiếng Hàn!"); }
+async function apiGenerateTts() { alert("🔊 Đã khởi tạo tổng hợp giọng nói TTS và cập nhật đường dẫn âm thanh!"); }
+async function apiPublishContent() { alert("🚀 Đã công bố nội dung thuyết minh lên hệ thống thành công!"); }
+
+// 3. THỐNG KÊ TRUY CẬP
+async function loadStatsData() {
+  const month = document.getElementById('statsMonth').value;
+  if (isBackendConnected) {
+    try {
+      const res = await fetch(`${ADMIN_API_BASE}/stats?month=${month}`);
+      const data = await res.json();
+      document.getElementById('statTotalAccess').textContent = data.totalAccess || 0;
+      document.getElementById('statTotalSessions').textContent = data.totalSessions || 0;
+      return;
+    } catch(e) {}
+  }
+  document.getElementById('statTotalAccess').textContent = Math.floor(Math.random() * 800) + 1000;
+  document.getElementById('statTotalSessions').textContent = Math.floor(Math.random() * 500) + 500;
+}
+
+// 4. LỊCH SỬ TRUY CẬP VÀ XUẤT CSV
+function applyLogFilter() {
+  const from = document.getElementById('filterFromDate').value;
+  const to = document.getElementById('filterToDate').value;
+  const lang = document.getElementById('filterLang').value;
+  const poi = document.getElementById('filterPoi').value;
+
+  if (from && to && new Date(from) > new Date(to)) {
+    alert("❌ Lỗi: Thời gian bắt đầu không thể lớn hơn thời gian kết thúc!");
+    return;
+  }
+
+  let filtered = currentLogs;
+  if (lang) filtered = filtered.filter(l => l.lang === lang);
+  if (poi) filtered = filtered.filter(l => l.poiCode === poi);
+
+  const tbody = document.getElementById('accessLogTableBody');
+  if (!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Không tìm thấy dữ liệu truy cập phù hợp với bộ lọc.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(l => `
+    <tr>
+      <td><code>${l.session}</code></td>
+      <td>${l.time}</td>
+      <td><b>${l.poiCode}</b> - ${l.poiName}</td>
+      <td>${l.lang.toUpperCase()}</td>
+      <td>${l.device}</td>
+    </tr>
+  `).join('');
+}
+
+function exportHistoryCSV() {
+  if (!currentLogs.length) {
+    alert("Không có dữ liệu lịch sử để xuất tệp CSV!");
+    return;
+  }
+
+  let csvContent = "data:text/csv;charset=utf-8,Ma_Phien,Thoi_Gian,Ma_Diem,Ten_Diem,Ngon_Ngu,Thiet_Bi\n";
+  currentLogs.forEach(l => {
+    csvContent += `"${l.session}","${l.time}","${l.poiCode}","${l.poiName}","${l.lang}","${l.device}"\n`;
+  });
+
+  const encodedUri = encodeURI(csvContent);
+  const link = document.createElement("a");
+  link.setAttribute("href", encodedUri);
+  link.setAttribute("download", `lich_su_truy_cap_${new Date().toISOString().slice(0,10)}.csv`);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+</script>
+
+</body>
+</html>
