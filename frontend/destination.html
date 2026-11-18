@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Dam Sen Park - GPS Location</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Arizonia&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <link rel="stylesheet" href="css/animate.css">
+  <link rel="stylesheet" href="css/owl.carousel.min.css">
+  <link rel="stylesheet" href="css/owl.theme.default.min.css">
+  <link rel="stylesheet" href="css/magnific-popup.css">
+  <link rel="stylesheet" href="css/bootstrap-datepicker.css">
+  <link rel="stylesheet" href="css/jquery.timepicker.css">
+  <link rel="stylesheet" href="css/flaticon.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .gmaps-wrapper {
+      position: relative;
+      width: 100%;
+      height: 520px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      background: #e9ecef;
+    }
+    #google-gps-map {
+      width: 100%;
+      height: calc(100% + 22px);
+      border: 0;
+      display: block;
+    }
+    .gps-card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      padding: 25px;
+      height: 100%;
+    }
+    .spot-item {
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .spot-item:hover, .spot-item.active {
+      border-color: #f15d30;
+      background: #fff8f6;
+    }
+    .badge-distance {
+      background: #f15d30;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .status-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      background: #ccc;
+    }
+    .status-dot.active {
+      background: #28a745;
+      box-shadow: 0 0 8px #28a745;
+    }
+    .status-dot.error {
+      background: #dc3545;
+    }
+  </style>
+</head>
+<body>
+ <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+   <div class="container">
+     <a class="navbar-brand" href="index.html">Dam Sen <span>Park</span></a>
+     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+       <span class="oi oi-menu"></span> Menu
+     </button>
+
+     <div class="collapse navbar-collapse" id="ftco-nav">
+       <ul class="navbar-nav ml-auto">
+         <li class="nav-item"><a href="index.html" class="nav-link">Home</a></li>
+         <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
+         <li class="nav-item active"><a href="destination.html" class="nav-link">GPS Location</a></li>
+         <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
+         <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
+       </ul>
+     </div>
+   </div>
+ </nav>
+ <!-- END nav -->
+
+ <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('images/bg_1.jpg');">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-center">
+      <div class="col-md-9 ftco-animate pb-5 text-center">
+         <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home <i class="fa fa-chevron-right"></i></a></span> <span>GPS Location <i class="fa fa-chevron-right"></i></span></p>
+         <h1 class="mb-0 bread">GPS Location</h1>
+     </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="ftco-section">
+   <div class="container">
+     <div class="row justify-content-center pb-4">
+       <div class="col-md-10 heading-section text-center ftco-animate">
+         <span class="subheading">Navigation &amp; Coordinates</span>
+         <h2 class="mb-3">Find Your Current GPS Location</h2>
+         <p>Enable location access in your browser to view your real-time position on Google Maps and check distances to nearby attractions.</p>
+       </div>
+     </div>
+
+     <!-- GPS Control Bar -->
+     <div class="row mb-4">
+       <div class="col-md-12">
+         <div class="gps-card d-flex flex-wrap align-items-center justify-content-between">
+           <div class="mb-2 mb-md-0">
+             <span class="status-dot" id="gps-status-dot"></span>
+             <strong id="gps-status-text">Ready for GPS positioning</strong>
+             <div class="text-muted small" id="gps-substatus">Click "Get Current Location" or enable live tracking.</div>
+           </div>
+           <div class="d-flex flex-wrap" style="gap: 8px;">
+             <button type="button" class="btn btn-primary" id="btn-locate">
+               <span class="fa fa-crosshairs mr-1"></span> Get Current Location
+             </button>
+             <button type="button" class="btn btn-outline-success" id="btn-watch">
+               <span class="fa fa-location-arrow mr-1"></span> Live Tracking: OFF
+             </button>
+             <button type="button" class="btn btn-outline-secondary" id="btn-demo" title="Use for testing on devices without GPS">
+               <span class="fa fa-map-pin mr-1"></span> Sample Coordinates
+             </button>
+           </div>
+         </div>
+       </div>
+     </div>
+
+     <!-- Full-Width Google Maps -->
+     <div class="row">
+       <div class="col-lg-12 mb-4">
+         <div class="gmaps-wrapper">
+           <iframe
+             id="google-gps-map"
+             src="https://maps.google.com/maps?q=10.7685,106.6365&hl=en&z=15&output=embed"
+             allowfullscreen=""
+             loading="lazy"
+             referrerpolicy="no-referrer-when-downgrade">
+           </iframe>
+         </div>
+       </div>
+     </div>
+
+     <!-- Destinations & Distance Calculation -->
+     <div class="row mt-2">
+       <div class="col-md-12">
+         <div class="gps-card">
+           <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+             <h4 class="mb-0"><span class="fa fa-map-marker text-primary mr-2"></span>Destinations &amp; Distance From You</h4>
+             <div class="d-flex align-items-center" style="gap: 10px;">
+               <span class="text-muted small">Select a destination to show Google Maps directions from your location</span>
+               <button type="button" class="btn btn-sm btn-outline-dark d-none" id="btn-clear-route">
+                 Show My Pin Only
+               </button>
+             </div>
+           </div>
+           <div class="row" id="spots-list"></div>
+         </div>
+       </div>
+     </div>
+   </div>
+ </section>
+
+ <footer class="ftco-footer bg-bottom ftco-no-pt" style="background-image: url(images/bg_3.jpg);">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-md pt-5">
+        <div class="ftco-footer-widget pt-md-5 mb-4">
+          <h2 class="ftco-heading-2">About</h2>
+          <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.</p>
+          <ul class="ftco-footer-social list-unstyled float-md-left float-lft">
+            <li class="ftco-animate"><a href="#"><span class="fa fa-twitter"></span></a></li>
+            <li class="ftco-animate"><a href="#"><span class="fa fa-facebook"></span></a></li>
+            <li class="ftco-animate"><a href="#"><span class="fa fa-instagram"></span></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md pt-5 border-left">
+        <div class="ftco-footer-widget pt-md-5 mb-4 ml-md-5">
+          <h2 class="ftco-heading-2">Information</h2>
+          <ul class="list-unstyled">
+            <li><a href="#" class="py-2 d-block">Online Enquiry</a></li>
+            <li><a href="#" class="py-2 d-block">General Enquiries</a></li>
+            <li><a href="#" class="py-2 d-block">Booking Conditions</a></li>
+            <li><a href="#" class="py-2 d-block">Privacy and Policy</a></li>
+            <li><a href="#" class="py-2 d-block">Refund Policy</a></li>
+            <li><a href="#" class="py-2 d-block">Call Us</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md pt-5 border-left">
+       <div class="ftco-footer-widget pt-md-5 mb-4">
+          <h2 class="ftco-heading-2">Experience</h2>
+          <ul class="list-unstyled">
+            <li><a href="#" class="py-2 d-block">Adventure</a></li>
+            <li><a href="#" class="py-2 d-block">Hotel and Restaurant</a></li>
+            <li><a href="#" class="py-2 d-block">Beach</a></li>
+            <li><a href="#" class="py-2 d-block">Nature</a></li>
+            <li><a href="#" class="py-2 d-block">Camping</a></li>
+            <li><a href="#" class="py-2 d-block">Party</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md pt-5 border-left">
+        <div class="ftco-footer-widget pt-md-5 mb-4">
+         <h2 class="ftco-heading-2">Have a Questions?</h2>
+         <div class="block-23 mb-3">
+           <ul>
+             <li><span class="icon fa fa-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
+             <li><a href="#"><span class="icon fa fa-phone"></span><span class="text">+2 392 3929 210</span></a></li>
+             <li><a href="#"><span class="icon fa fa-paper-plane"></span><span class="text">info@yourdomain.com</span></a></li>
+           </ul>
+         </div>
+       </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+          Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="fa fa-heart" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+          <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></p>
+      </div>
+    </div>
+  </div>
+ </footer>
+
+ <!-- loader -->
+ <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+ <script src="js/jquery.min.js"></script>
+ <script src="js/jquery-migrate-3.0.1.min.js"></script>
+ <script src="js/popper.min.js"></script>
+ <script src="js/bootstrap.min.js"></script>
+ <script src="js/jquery.easing.1.3.js"></script>
+ <script src="js/jquery.waypoints.min.js"></script>
+ <script src="js/jquery.stellar.min.js"></script>
+ <script src="js/owl.carousel.min.js"></script>
+ <script src="js/jquery.magnific-popup.min.js"></script>
+ <script src="js/jquery.animateNumber.min.js"></script>
+ <script src="js/bootstrap-datepicker.js"></script>
+ <script src="js/scrollax.min.js"></script>
+ <script src="js/main.js"></script>
+
+ <script>
+   (function () {
+     const tourSpots = [
+       { id: 1, name: "Dam Sen Cultural Park", desc: "District 11, Ho Chi Minh City", lat: 10.7685, lng: 106.6365 },
+       { id: 2, name: "Independence Palace", desc: "District 1, Ho Chi Minh City", lat: 10.7769, lng: 106.6953 },
+       { id: 3, name: "Notre-Dame Cathedral Basilica", desc: "District 1, Ho Chi Minh City", lat: 10.7798, lng: 106.6990 },
+       { id: 4, name: "Ben Thanh Market", desc: "District 1, Ho Chi Minh City", lat: 10.7725, lng: 106.6980 },
+       { id: 5, name: "Nha Rong Wharf", desc: "District 4, Ho Chi Minh City", lat: 10.7682, lng: 106.7068 },
+       { id: 6, name: "Nguyen Hue Walking Street", desc: "District 1, Ho Chi Minh City", lat: 10.7744, lng: 106.7035 }
+     ];
+
+     const mapIframe = document.getElementById("google-gps-map");
+     const clearRouteBtn = document.getElementById("btn-clear-route");
+
+     let watchId = null;
+     let currentPos = null;
+     let selectedSpotId = null;
+     let lastMapUrl = "";
+
+     function setGoogleMapUrl(url) {
+       if (url !== lastMapUrl) {
+         lastMapUrl = url;
+         mapIframe.src = url;
+       }
+     }
+
+     // Haversine formula to calculate distance in km
+     function calcDistanceKm(lat1, lon1, lat2, lon2) {
+       const R = 6371;
+       const dLat = ((lat2 - lat1) * Math.PI) / 180;
+       const dLon = ((lon2 - lon1) * Math.PI) / 180;
+       const a =
+         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+         Math.cos((lat1 * Math.PI) / 180) *
+           Math.cos((lat2 * Math.PI) / 180) *
+           Math.sin(dLon / 2) *
+           Math.sin(dLon / 2);
+       return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+     }
+
+     function formatDistance(km) {
+       if (km < 1) return `${Math.round(km * 1000)} m`;
+       return `${km.toFixed(2)} km`;
+     }
+
+     function setStatus(type, title, subtitle) {
+       const dot = document.getElementById("gps-status-dot");
+       dot.className = "status-dot" + (type ? " " + type : "");
+       document.getElementById("gps-status-text").textContent = title;
+       document.getElementById("gps-substatus").textContent = subtitle;
+     }
+
+     function updateGoogleMapView() {
+       if (selectedSpotId) {
+         const spot = tourSpots.find((s) => s.id === selectedSpotId);
+         if (spot) {
+           clearRouteBtn.classList.remove("d-none");
+           if (currentPos) {
+             // Show Google Maps directions from user's GPS location to selected spot
+             setGoogleMapUrl(
+               `https://maps.google.com/maps?saddr=${currentPos.lat},${currentPos.lng}&daddr=${spot.lat},${spot.lng}&hl=en&output=embed`
+             );
+           } else {
+             setGoogleMapUrl(
+               `https://maps.google.com/maps?q=${spot.lat},${spot.lng}&hl=en&z=16&output=embed`
+             );
+           }
+           return;
+         }
+       }
+
+       clearRouteBtn.classList.add("d-none");
+       if (currentPos) {
+         // Show only the user's current GPS pin on Google Maps
+         setGoogleMapUrl(
+           `https://maps.google.com/maps?q=${currentPos.lat},${currentPos.lng}&hl=en&z=16&output=embed`
+         );
+       }
+     }
+
+     function updatePosition(lat, lng) {
+       currentPos = { lat, lng };
+       updateGoogleMapView();
+       renderSpotsList();
+     }
+
+     function renderSpotsList() {
+       const container = document.getElementById("spots-list");
+       let list = tourSpots.map((spot) => {
+         const dist = currentPos ? calcDistanceKm(currentPos.lat, currentPos.lng, spot.lat, spot.lng) : null;
+         return { ...spot, dist };
+       });
+
+       if (currentPos) {
+         list.sort((a, b) => a.dist - b.dist);
+       }
+
+       container.innerHTML = list
+         .map(
+           (spot) => `
+           <div class="col-md-6 col-lg-4 mb-2">
+             <div class="spot-item ${selectedSpotId === spot.id ? "active" : ""}" onclick="window.__selectSpot(${spot.id})">
+               <div class="d-flex justify-content-between align-items-start">
+                 <div class="pr-2">
+                   <strong class="d-block text-dark">${spot.name}</strong>
+                   <small class="text-muted">${spot.desc}</small>
+                 </div>
+                 <span class="badge-distance">${spot.dist !== null ? formatDistance(spot.dist) : "Not located"}</span>
+               </div>
+             </div>
+           </div>
+         `
+         )
+         .join("");
+     }
+
+     function selectSpot(spotId) {
+       selectedSpotId = selectedSpotId === spotId ? null : spotId;
+       renderSpotsList();
+       updateGoogleMapView();
+     }
+     window.__selectSpot = selectSpot;
+
+     clearRouteBtn.addEventListener("click", () => {
+       selectedSpotId = null;
+       renderSpotsList();
+       updateGoogleMapView();
+     });
+
+     // Fetch GPS position once
+     function locateOnce() {
+       if (!navigator.geolocation) {
+         setStatus("error", "Geolocation Not Supported", "Please use a modern version of Chrome, Safari, Edge, or Firefox.");
+         return;
+       }
+       setStatus("", "Acquiring GPS signal...", "Please allow the browser to access your location.");
+       navigator.geolocation.getCurrentPosition(
+         (pos) => {
+           const { latitude, longitude } = pos.coords;
+           setStatus("active", "GPS Location Acquired", "Your current GPS pin is shown on Google Maps.");
+           updatePosition(latitude, longitude);
+         },
+         (err) => {
+           let msg = "Unable to retrieve location.";
+           if (err.code === 1) msg = "Location permission denied. Please allow access or click 'Sample Coordinates'.";
+           else if (err.code === 2) msg = "GPS signal unavailable.";
+           else if (err.code === 3) msg = "GPS request timed out.";
+           setStatus("error", "GPS Positioning Error", msg);
+         },
+         { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+       );
+     }
+
+     // Toggle continuous GPS tracking (watchPosition)
+     function toggleWatch() {
+       const btn = document.getElementById("btn-watch");
+       if (watchId !== null) {
+         navigator.geolocation.clearWatch(watchId);
+         watchId = null;
+         btn.classList.remove("btn-success");
+         btn.classList.add("btn-outline-success");
+         btn.innerHTML = '<span class="fa fa-location-arrow mr-1"></span> Live Tracking: OFF';
+         setStatus("", "Live Tracking Stopped", "Your last known GPS location remains pinned on Google Maps.");
+         return;
+       }
+
+       if (!navigator.geolocation) {
+         setStatus("error", "Geolocation Not Supported", "");
+         return;
+       }
+
+       btn.classList.remove("btn-outline-success");
+       btn.classList.add("btn-success");
+       btn.innerHTML = '<span class="fa fa-location-arrow mr-1"></span> Live Tracking: ON';
+       setStatus("active", "Starting live GPS tracking...", "Automatically updates your pin on Google Maps as you move.");
+
+       watchId = navigator.geolocation.watchPosition(
+         (pos) => {
+           const { latitude, longitude } = pos.coords;
+           setStatus("active", "Live GPS Tracking Active", "Your position on Google Maps is updating in real time.");
+           updatePosition(latitude, longitude);
+         },
+         (err) => {
+           setStatus("error", "Lost GPS Tracking Signal", err.message);
+         },
+         { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+       );
+     }
+
+     document.getElementById("btn-locate").addEventListener("click", locateOnce);
+     document.getElementById("btn-watch").addEventListener("click", toggleWatch);
+     document.getElementById("btn-demo").addEventListener("click", () => {
+       setStatus("active", "Using Sample Coordinates (Dam Sen Park)", "Simulation mode enabled for testing Google Maps GPS and distances.");
+       updatePosition(10.7685, 106.6365);
+     });
+
+     // Initial render & auto-locate on page load
+     renderSpotsList();
+     locateOnce();
+   })();
+ </script>
+
+</body>
+</html>
