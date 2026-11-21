@@ -1,0 +1,225 @@
+/* ==========================================================================
+   Dam Sen Park - Admin Stylesheet (css/admin.css)
+   Matches visitor portal font stack (Poppins / Arizonia) & #f15d30 accent
+   ========================================================================== */
+
+:root {
+  --admin-primary: #f15d30;
+  --admin-primary-hover: #d84b20;
+  --admin-bg: #f8f9fa;
+  --admin-surface: #ffffff;
+  --admin-text: #212529;
+  --admin-muted: #6c757d;
+  --admin-border: #eceef2;
+  --admin-radius: 8px;
+  --admin-shadow: 0 10px 30px rgba(0, 0, 0, 0.06);
+}
+
+body.admin-body,
+body.admin-body h1,
+body.admin-body h2,
+body.admin-body h3,
+body.admin-body h4,
+body.admin-body h5,
+body.admin-body h6,
+body.admin-body .navbar-brand,
+body.admin-body .btn,
+body.admin-body .form-control,
+body.admin-body .nav-link,
+body.admin-body .table {
+  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+body.admin-body {
+  background-color: var(--admin-bg);
+  color: var(--admin-text);
+}
+
+/* ---------- Hero Banner ---------- */
+.admin-hero {
+  height: 290px !important;
+  min-height: 290px !important;
+  position: relative;
+}
+
+.admin-hero .overlay {
+  opacity: 0.55;
+}
+
+.admin-hero .slider-text {
+  height: 290px !important;
+  min-height: 290px !important;
+}
+
+/* ---------- Card & KPI Stat Cards ---------- */
+.admin-card {
+  background: var(--admin-surface);
+  border-radius: var(--admin-radius);
+  box-shadow: var(--admin-shadow);
+  padding: 24px 26px;
+  margin-bottom: 24px;
+  border: 1px solid var(--admin-border);
+}
+
+.stat-card {
+  background: var(--admin-surface);
+  border-radius: var(--admin-radius);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+  padding: 20px;
+  border-left: 4px solid var(--admin-primary);
+  border-top: 1px solid var(--admin-border);
+  border-right: 1px solid var(--admin-border);
+  border-bottom: 1px solid var(--admin-border);
+  height: 100%;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+}
+
+.stat-card h3 {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--admin-text);
+  margin-bottom: 4px;
+}
+
+.stat-card .stat-label {
+  font-size: 12px;
+  color: var(--admin-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  font-weight: 600;
+}
+
+/* ---------- Module Navigation Pills ---------- */
+.admin-nav-pills .nav-link {
+  color: #495057;
+  font-weight: 500;
+  font-size: 14px;
+  border-radius: 6px;
+  padding: 10px 16px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #e2e6ea;
+  background: var(--admin-surface);
+  transition: all 0.2s ease;
+}
+
+.admin-nav-pills .nav-link:hover {
+  border-color: var(--admin-primary);
+  color: var(--admin-primary);
+}
+
+.admin-nav-pills .nav-link.active {
+  background-color: var(--admin-primary) !important;
+  border-color: var(--admin-primary) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(241, 93, 48, 0.28);
+}
+
+/* ---------- Badges & Brand Controls ---------- */
+.badge-brand {
+  background: var(--admin-primary);
+  color: #ffffff;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.btn-brand {
+  background-color: var(--admin-primary);
+  border-color: var(--admin-primary);
+  color: #ffffff;
+}
+
+.btn-brand:hover,
+.btn-brand:focus {
+  background-color: var(--admin-primary-hover);
+  border-color: var(--admin-primary-hover);
+  color: #ffffff;
+}
+
+/* ---------- Login Screen ---------- */
+.login-wrapper {
+  min-height: 100vh;
+  background-image: url('../images/bg_5.jpg');
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-wrapper .overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.62);
+}
+
+.login-box {
+  position: relative;
+  z-index: 2;
+  background: var(--admin-surface);
+  border-radius: 10px;
+  padding: 38px 34px;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.28);
+}
+
+/* ---------- Heatmap & Tables ---------- */
+.heatmap-cell {
+  width: 100%;
+  height: 30px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  transition: transform 0.15s ease;
+}
+
+.heatmap-cell:hover {
+  transform: scale(1.04);
+}
+
+.admin-table th {
+  border-top: none;
+  font-size: 12px;
+  text-transform: uppercase;
+  color: var(--admin-muted);
+  font-weight: 600;
+  letter-spacing: 0.4px;
+}
+
+.admin-table td {
+  vertical-align: middle;
+  font-size: 14px;
+}
+
+/* ---------- QR Preview Box ---------- */
+.qr-preview-box {
+  border: 2px dashed #dee2e6;
+  border-radius: 8px;
+  padding: 24px 20px;
+  text-align: center;
+  background: #fafafa;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 767.98px) {
+  .admin-card {
+    padding: 18px 16px;
+  }
+  .admin-nav-pills .nav-link {
+    width: 100%;
+    margin-right: 0;
+  }
+}
