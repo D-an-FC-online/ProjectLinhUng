@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <title>Đầm Sen - Quản trị thuyết minh đa ngôn ngữ</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <style>
+    .version-row.published { background: #f0fff4; }
+    .status-badge { font-size: 11px; padding: 3px 8px; border-radius: 10px; font-weight: 600; }
+    .st-DRAFT { background: #fff3cd; color: #856404; }
+    .st-APPROVED { background: #d4edda; color: #155724; }
+    .st-ARCHIVED { background: #e2e3e5; color: #6c757d; }
+    .st-QUEUED, .st-RUNNING { background: #cce5ff; color: #004085; }
+    .st-SUCCEEDED { background: #d4edda; color: #155724; }
+    .st-FAILED { background: #f8d7da; color: #721c24; }
+    .st-CANCELLED { background: #e2e3e5; color: #6c757d; }
+    .lang-card { border: 1px solid #eceef2; border-radius: 8px; padding: 16px; margin-bottom: 16px; background: #fff; }
+    .source-box { background: #f8f9fa; border-radius: 6px; padding: 12px; white-space: pre-line; max-height: 380px; overflow-y: auto; font-size: 14px; }
+    .admin-table td, .admin-table th { vertical-align: middle; font-size: 14px; }
+    .btn-xs { padding: 2px 8px; font-size: 12px; }
+    #toast-area { position: fixed; right: 20px; bottom: 20px; z-index: 2000; max-width: 380px; }
+    .admin-body .modal-body textarea { font-size: 14px; }
+  </style>
+</head>
+<body class="admin-body">
+
+  <!-- ==================== ĐĂNG NHẬP (UC06) ==================== -->
+  <div id="login-screen" class="login-wrapper d-none" style="background-image: url('images/bg_1.jpg');">
+    <div class="overlay"></div>
+    <div class="login-box">
+      <div class="text-center mb-4">
+        <a class="navbar-brand text-dark" href="index.html" style="font-size: 26px; font-weight: 700;">Đầm Sen <span style="color: #f15d30;">Admin</span></a>
+        <p class="text-muted small mb-0 mt-1">Hệ thống quản trị thuyết minh đa ngôn ngữ</p>
+      </div>
+      <div id="login-alert" class="alert alert-danger d-none small" role="alert"></div>
+      <form id="login-form" autocomplete="on">
+        <div class="form-group">
+          <label class="font-weight-bold small" for="login-username">Tên đăng nhập</label>
+          <input type="text" class="form-control" id="login-username" autocomplete="username" required>
+        </div>
+        <div class="form-group">
+          <label class="font-weight-bold small" for="login-password">Mật khẩu</label>
+          <input type="password" class="form-control" id="login-password" autocomplete="current-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block py-2 font-weight-bold"><i class="fa fa-sign-in mr-1"></i> Đăng nhập</button>
+      </form>
+      <div class="text-center mt-4 pt-3 border-top">
+        <a href="index.html" class="small text-muted"><i class="fa fa-arrow-left mr-1"></i>Về trang khách tham quan</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== TRANG QUẢN TRỊ ==================== -->
+  <div id="admin-dashboard" class="d-none">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="admin.html">Đầm Sen <span style="color:#f15d30">Admin</span></a>
+        <ul class="navbar-nav ml-auto flex-row align-items-center">
+          <li class="nav-item mr-3"><a href="destination.html" target="_blank" class="nav-link"><i class="fa fa-external-link mr-1"></i>Trang khách</a></li>
+          <li class="nav-item">
+            <button type="button" id="btn-logout" class="btn btn-sm btn-primary px-3 py-2"><i class="fa fa-sign-out mr-1"></i>Đăng xuất (<span id="current-admin-name"></span>)</button>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <section class="py-5">
+      <div class="container">
+        <ul class="nav nav-pills admin-nav-pills mb-4" role="tablist">
+          <li class="nav-item"><a class="nav-link active" data-toggle="pill" href="#tab-overview" role="tab"><i class="fa fa-dashboard mr-1"></i>Tổng quan</a></li>
+          <li class="nav-item"><a class="nav-link" data-toggle="pill" href="#tab-pois" role="tab"><i class="fa fa-map-marker mr-1"></i>Điểm tham quan &amp; nội dung</a></li>
+          <li class="nav-item"><a class="nav-link" data-toggle="pill" href="#tab-zones" role="tab"><i class="fa fa-th-large mr-1"></i>Khu vực</a></li>
+          <li class="nav-item"><a class="nav-link" data-toggle="pill" href="#tab-glossary" role="tab"><i class="fa fa-book mr-1"></i>Thuật ngữ</a></li>
+          <li class="nav-item"><a class="nav-link" data-toggle="pill" href="#tab-jobs" role="tab"><i class="fa fa-tasks mr-1"></i>Tác vụ</a></li>
+          <li class="nav-item"><a class="nav-link" data-toggle="pill" href="#tab-account" role="tab"><i class="fa fa-user mr-1"></i>Tài khoản</a></li>
+        </ul>
+
+        <div class="tab-content">
+          <!-- ---------- Tổng quan ---------- -->
+          <div class="tab-pane fade show active" id="tab-overview" role="tabpanel">
+            <div class="row" id="overview-stats"></div>
+            <div class="admin-card mt-3">
+              <h5 class="mb-2"><i class="fa fa-exclamation-triangle text-warning mr-1"></i>Bản dịch cần cập nhật</h5>
+              <p class="small text-muted">Bản tiếng Việt đã được xuất bản phiên bản mới, nhưng bản Anh/Hàn vẫn dịch từ bản cũ. Khách vẫn được phục vụ bản cũ cho tới khi bạn cập nhật hoặc gỡ xuất bản.</p>
+              <div id="overview-needs"></div>
+            </div>
+            <div class="alert alert-info small mt-3 d-none" id="overview-mt-off">
+              <i class="fa fa-info-circle mr-1"></i>Chưa cấu hình <code>GOOGLE_API_KEY</code>: dịch tự động và tạo giọng đọc TTS sẽ báo lỗi.
+              Bạn vẫn có thể tạo bản dịch thủ công và tải file âm thanh lên. Xem README.md để bật.
+            </div>
+          </div>
+
+          <!-- ---------- Điểm tham quan & nội dung ---------- -->
+          <div class="tab-pane fade" id="tab-pois" role="tabpanel">
+            <div class="admin-card">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Điểm tham quan</h5>
+                <button type="button" class="btn btn-primary btn-sm" id="btn-new-poi"><i class="fa fa-plus mr-1"></i>Thêm điểm</button>
+              </div>
+              <div class="table-responsive">
+                <table class="table admin-table mb-0">
+                  <thead><tr><th>Mã</th><th>Tiêu đề (vi)</th><th>Khu vực</th><th>Tọa độ / bán kính</th><th>Trạng thái</th><th>Xuất bản</th><th></th></tr></thead>
+                  <tbody id="poi-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="admin-card mt-4 d-none" id="content-panel">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Nội dung thuyết minh: <span id="content-poi-code" class="text-primary"></span></h5>
+                <button type="button" class="btn btn-light btn-sm" id="btn-content-refresh"><i class="fa fa-refresh"></i></button>
+              </div>
+              <p class="small text-muted">Quy trình: tạo bản nháp tiếng Việt → Duyệt (bản đã duyệt bị khóa) → Dịch sang Anh/Hàn (hoặc nhập tay) → Duyệt bản dịch → Tạo giọng đọc hoặc tải audio → Xuất bản.</p>
+              <div id="content-langs"></div>
+            </div>
+          </div>
+
+          <!-- ---------- Khu vực ---------- -->
+          <div class="tab-pane fade" id="tab-zones" role="tabpanel">
+            <div class="admin-card">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Khu vực</h5>
+                <button type="button" class="btn btn-primary btn-sm" id="btn-new-zone"><i class="fa fa-plus mr-1"></i>Thêm khu vực</button>
+              </div>
+              <table class="table admin-table mb-0">
+                <thead><tr><th>Mã</th><th>Tên (vi / en / ko)</th><th>Số điểm</th><th>Trạng thái</th><th></th></tr></thead>
+                <tbody id="zone-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ---------- Thuật ngữ (UC14) ---------- -->
+          <div class="tab-pane fade" id="tab-glossary" role="tabpanel">
+            <div class="admin-card">
+              <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">Bảng thuật ngữ &amp; cách đọc</h5>
+                <button type="button" class="btn btn-primary btn-sm" id="btn-new-term"><i class="fa fa-plus mr-1"></i>Thêm thuật ngữ</button>
+              </div>
+              <div class="table-responsive">
+                <table class="table admin-table mb-0">
+                  <thead><tr><th>Thuật ngữ</th><th>Loại</th><th>Giữ nguyên</th><th>Tiếng Anh</th><th>Tiếng Hàn</th><th>Cách đọc (vi / en / ko)</th><th>Ghi chú</th><th></th></tr></thead>
+                  <tbody id="term-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ---------- Tác vụ (UC13) ---------- -->
+          <div class="tab-pane fade" id="tab-jobs" role="tabpanel">
+            <div class="admin-card">
+              <div class="d-flex flex-wrap justify-content-between align-items-center mb-3" style="gap:8px">
+                <h5 class="mb-0">Tác vụ dịch &amp; tạo giọng đọc</h5>
+                <div class="form-inline" style="gap:6px">
+                  <select class="form-control form-control-sm" id="job-filter-status">
+                    <option value="">Mọi trạng thái</option><option>QUEUED</option><option>RUNNING</option><option>SUCCEEDED</option><option>FAILED</option><option>CANCELLED</option>
+                  </select>
+                  <select class="form-control form-control-sm" id="job-filter-type"><option value="">Mọi loại</option><option>TRANSLATE</option><option>TTS</option></select>
+                  <select class="form-control form-control-sm" id="job-filter-poi"><option value="">Mọi điểm</option></select>
+                  <button type="button" class="btn btn-light btn-sm" id="btn-jobs-refresh"><i class="fa fa-refresh"></i></button>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table admin-table mb-0">
+                  <thead><tr><th>#</th><th>Loại</th><th>Điểm</th><th>Ngôn ngữ</th><th>Trạng thái</th><th>Tạo lúc (UTC)</th><th>Lỗi</th><th>Thử lại</th><th></th></tr></thead>
+                  <tbody id="job-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <!-- ---------- Tài khoản ---------- -->
+          <div class="tab-pane fade" id="tab-account" role="tabpanel">
+            <div class="admin-card" style="max-width:480px">
+              <h5 class="mb-3">Đổi mật khẩu</h5>
+              <form id="password-form">
+                <div class="form-group"><label class="small">Mật khẩu hiện tại</label><input type="password" class="form-control" id="pw-old" autocomplete="current-password" required></div>
+                <div class="form-group"><label class="small">Mật khẩu mới (ít nhất 8 ký tự)</label><input type="password" class="form-control" id="pw-new" minlength="8" autocomplete="new-password" required></div>
+                <button type="submit" class="btn btn-primary">Lưu mật khẩu</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ==================== MODAL: Điểm tham quan ==================== -->
+  <div class="modal fade" id="poi-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document"><form class="modal-content" id="poi-form">
+      <div class="modal-header"><h5 class="modal-title" id="poi-modal-title">Điểm tham quan</h5><button type="button" class="close" data-dismiss="modal">&times;</button></div>
+      <div class="modal-body">
+        <input type="hidden" id="poi-id">
+        <div class="form-group"><label class="small">Khu vực</label><select class="form-control" id="poi-zone" required></select></div>
+        <div class="form-group"><label class="small">Mã điểm (IN HOA, số, dấu _)</label><input class="form-control" id="poi-code" pattern="[A-Z0-9_]{2,50}" required></div>
+        <div class="form-row">
+          <div class="form-group col"><label class="small">Vĩ độ (10.755 – 10.780)</label><input type="number" step="0.000001" min="10.755" max="10.78" class="form-control" id="poi-lat" required></div>
+          <div class="form-group col"><label class="small">Kinh độ (106.625 – 106.650)</label><input type="number" step="0.000001" min="106.625" max="106.65" class="form-control" id="poi-lng" required></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col"><label class="small">Bán kính nhận diện (m)</label><input type="number" min="5" max="300" class="form-control" id="poi-radius" value="30" required></div>
+          <div class="form-group col"><label class="small">Trạng thái</label><select class="form-control" id="poi-status"><option value="ACTIVE">ACTIVE</option><option value="INACTIVE">INACTIVE</option></select></div>
+        </div>
+        <small class="text-muted">Tọa độ phải nằm trong vùng Đầm Sen. Mẹo: mở Google Maps, nhấp chuột phải vào vị trí để chép tọa độ.</small>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-light" data-dismiss="modal">Hủy</button><button type="submit" class="btn btn-primary">Lưu</button></div>
+    </form></div>
+  </div>
+
+  <!-- ==================== MODAL: Khu vực ==================== -->
+  <div class="modal fade" id="zone-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document"><form class="modal-content" id="zone-form">
+      <div class="modal-header"><h5 class="modal-title">Khu vực</h5><button type="button" class="close" data-dismiss="modal">&times;</button></div>
+      <div class="modal-body">
+        <input type="hidden" id="zone-id">
+        <div class="form-group"><label class="small">Mã khu vực</label><input class="form-control" id="zone-code" pattern="[A-Z0-9_]{2,50}" required></div>
+        <div class="form-group"><label class="small">Tên tiếng Việt</label><input class="form-control" id="zone-name-vi" required></div>
+        <div class="form-group"><label class="small">Tên tiếng Anh</label><input class="form-control" id="zone-name-en"></div>
+        <div class="form-group"><label class="small">Tên tiếng Hàn</label><input class="form-control" id="zone-name-ko"></div>
+        <div class="form-check"><input type="checkbox" class="form-check-input" id="zone-active" checked><label class="form-check-label" for="zone-active">Đang bật (tắt thì khách không thấy các điểm trong khu vực)</label></div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-light" data-dismiss="modal">Hủy</button><button type="submit" class="btn btn-primary">Lưu</button></div>
+    </form></div>
+  </div>
+
+  <!-- ==================== MODAL: Thuật ngữ ==================== -->
+  <div class="modal fade" id="term-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document"><form class="modal-content" id="term-form">
+      <div class="modal-header"><h5 class="modal-title">Thuật ngữ</h5><button type="button" class="close" data-dismiss="modal">&times;</button></div>
+      <div class="modal-body">
+        <input type="hidden" id="term-id">
+        <div class="form-row">
+          <div class="form-group col-md-6"><label class="small">Thuật ngữ gốc (tiếng Việt)</label><input class="form-control" id="term-term" required></div>
+          <div class="form-group col-md-3"><label class="small">Loại</label>
+            <select class="form-control" id="term-type"><option>PLACE</option><option>RIDE</option><option>ZONE</option><option>PERSON</option><option>ANIMAL</option><option>ORGANIZATION</option><option>OTHER</option></select></div>
+          <div class="form-group col-md-3 d-flex align-items-end"><div class="form-check mb-2"><input type="checkbox" class="form-check-input" id="term-keep"><label class="form-check-label" for="term-keep">Giữ nguyên khi dịch</label></div></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6"><label class="small">Cách viết trong bản tiếng Anh</label><input class="form-control" id="term-en"></div>
+          <div class="form-group col-md-6"><label class="small">Cách viết trong bản tiếng Hàn</label><input class="form-control" id="term-ko"></div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-4"><label class="small">Cách đọc tiếng Việt (TTS)</label><input class="form-control" id="term-alias-vi"></div>
+          <div class="form-group col-md-4"><label class="small">Cách đọc tiếng Anh (TTS)</label><input class="form-control" id="term-alias-en"></div>
+          <div class="form-group col-md-4"><label class="small">Cách đọc tiếng Hàn (TTS)</label><input class="form-control" id="term-alias-ko"></div>
+        </div>
+        <div class="form-group"><label class="small">Ghi chú</label><input class="form-control" id="term-note" maxlength="500"></div>
+      </div>
+      <div class="modal-footer"><button type="button" class="btn btn-light" data-dismiss="modal">Hủy</button><button type="submit" class="btn btn-primary">Lưu</button></div>
+    </form></div>
+  </div>
+
+  <!-- ==================== MODAL: Soạn / duyệt phiên bản (UC08, UC10) ==================== -->
+  <div class="modal fade" id="version-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document" style="max-width:1100px"><div class="modal-content">
+      <div class="modal-header"><h5 class="modal-title" id="version-modal-title">Phiên bản</h5><button type="button" class="close" data-dismiss="modal">&times;</button></div>
+      <div class="modal-body">
+        <input type="hidden" id="version-id"><input type="hidden" id="version-lang"><input type="hidden" id="version-poi">
+        <div class="row">
+          <div class="col-lg-6 d-none" id="version-source-col">
+            <label class="small font-weight-bold">Bản gốc tiếng Việt</label>
+            <div class="font-weight-bold mb-1" id="version-source-title"></div>
+            <div class="source-box" id="version-source-body"></div>
+          </div>
+          <div class="col" id="version-edit-col">
+            <div class="form-group"><label class="small font-weight-bold">Tiêu đề</label><input class="form-control" id="version-title" maxlength="255"></div>
+            <div class="form-group"><label class="small font-weight-bold">Nội dung thuyết minh</label><textarea class="form-control" id="version-body" rows="12"></textarea></div>
+          </div>
+        </div>
+        <div id="version-qa" class="mt-2"></div>
+      </div>
+      <div class="modal-footer">
+        <span class="mr-auto small text-muted" id="version-status"></span>
+        <button type="button" class="btn btn-light" data-dismiss="modal">Đóng</button>
+        <button type="button" class="btn btn-outline-primary" id="btn-version-save">Lưu nháp</button>
+        <button type="button" class="btn btn-success" id="btn-version-approve"><i class="fa fa-check mr-1"></i>Kiểm tra &amp; Duyệt</button>
+      </div>
+    </div></div>
+  </div>
+
+  <input type="file" id="audio-file-input" accept=".mp3,.m4a,.ogg,.wav,audio/*" class="d-none">
+  <div id="toast-area"></div>
+
+  <script src="js/jquery.min.js"></script>
+  <script src="js/popper.min.js"></script>
+  <script src="js/bootstrap.min.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

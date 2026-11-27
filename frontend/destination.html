@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Dam Sen Park - GPS Location</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  
+  <link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800,900" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Arizonia&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+  <link rel="stylesheet" href="css/animate.css">
+  <link rel="stylesheet" href="css/owl.carousel.min.css">
+  <link rel="stylesheet" href="css/owl.theme.default.min.css">
+  <link rel="stylesheet" href="css/magnific-popup.css">
+  <link rel="stylesheet" href="css/bootstrap-datepicker.css">
+  <link rel="stylesheet" href="css/jquery.timepicker.css">
+  <link rel="stylesheet" href="css/flaticon.css">
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    .hero-wrap {
+      background-size: cover !important;
+      background-position: center center !important;
+      background-repeat: no-repeat !important;
+      image-rendering: -webkit-optimize-contrast;
+    }
+    .hero-wrap .overlay {
+      opacity: 0.35 !important;
+    }
+    .gmaps-wrapper {
+      position: relative;
+      width: 100%;
+      height: 520px;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      background: #e9ecef;
+    }
+    #google-gps-map {
+      width: 100%;
+      height: calc(100% + 22px);
+      border: 0;
+      display: block;
+    }
+    .gps-card {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      padding: 25px;
+      height: 100%;
+    }
+    .spot-item {
+      border: 1px solid #eee;
+      border-radius: 6px;
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .spot-item:hover, .spot-item.active {
+      border-color: #f15d30;
+      background: #fff8f6;
+    }
+    .badge-distance {
+      background: #f15d30;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .status-dot {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 6px;
+      background: #ccc;
+    }
+    .status-dot.active {
+      background: #28a745;
+      box-shadow: 0 0 8px #28a745;
+    }
+    .status-dot.error {
+      background: #dc3545;
+    }
+    .spot-item .badge-heard { background:#6c757d; color:#fff; padding:2px 8px; border-radius:12px; font-size:11px; }
+    .spot-item.heard { opacity: .75; }
+    .spot-group { border: 2px dashed #f15d30; border-radius: 8px; padding: 10px 10px 0; margin-bottom: 12px; }
+    .spot-group-label { font-size: 13px; color: #f15d30; font-weight: 600; margin-bottom: 8px; }
+    .badge-lang { background:#e9ecef; color:#495057; padding:2px 6px; border-radius:4px; font-size:11px; }
+    .detail-body { white-space: pre-line; line-height: 1.7; max-height: 360px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+ <nav class="navbar navbar-expand-lg navbar-dark ftco_navbar bg-dark ftco-navbar-light" id="ftco-navbar">
+   <div class="container">
+     <a class="navbar-brand" href="index.html">Dam Sen <span>Park</span></a>
+     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
+       <span class="oi oi-menu"></span> Menu
+     </button>
+
+     <div class="collapse navbar-collapse" id="ftco-nav">
+       <ul class="navbar-nav ml-auto align-items-lg-center">
+         <li class="nav-item"><a href="index.html" class="nav-link" data-i18n="nav_home">Home</a></li>
+         <li class="nav-item active"><a href="destination.html" class="nav-link" data-i18n="nav_gps">GPS Location</a></li>
+         <li class="nav-item"><a href="contact.html" class="nav-link" data-i18n="nav_contact">Contact</a></li>
+         <li class="nav-item dropdown ml-lg-2">
+           <a class="nav-link dropdown-toggle" href="#" id="langDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+             <span class="fa fa-globe mr-1"></span><span id="current-lang-label">EN</span>
+           </a>
+           <div class="dropdown-menu dropdown-menu-right" aria-labelledby="langDropdown">
+             <a class="dropdown-item lang-option" href="#" data-lang="vi">Tiếng Việt</a>
+             <a class="dropdown-item lang-option" href="#" data-lang="en">English</a>
+             <a class="dropdown-item lang-option" href="#" data-lang="ko">한국어</a>
+           </div>
+         </li>
+       </ul>
+     </div>
+   </div>
+ </nav>
+ <!-- END nav -->
+
+ <section class="hero-wrap hero-wrap-2 js-fullheight" style="background-image: url('images/damsen.jpg');">
+  <div class="overlay"></div>
+  <div class="container">
+    <div class="row no-gutters slider-text js-fullheight align-items-end justify-content-center">
+      <div class="col-md-9 ftco-animate pb-5 text-center">
+         <p class="breadcrumbs"><span class="mr-2"><a href="index.html"><span data-i18n="dest_breadcrumb_home">Home</span> <i class="fa fa-chevron-right"></i></a></span> <span><span data-i18n="dest_breadcrumb_current">GPS Location</span> <i class="fa fa-chevron-right"></i></span></p>
+         <h1 class="mb-0 bread" data-i18n="dest_title">GPS Location</h1>
+     </div>
+   </div>
+  </div>
+ </section>
+
+ <section class="ftco-section">
+   <div class="container">
+     <div class="row justify-content-center pb-4">
+       <div class="col-md-10 heading-section text-center ftco-animate">
+         <span class="subheading" data-i18n="dest_subheading">Location-based guide</span>
+         <h2 class="mb-3" data-i18n="dest_h2">Attractions near you</h2>
+         <p data-i18n="dest_desc">Allow location access to see attractions within 300 m.</p>
+       </div>
+     </div>
+
+     <!-- Thanh trạng thái định vị -->
+     <div class="row mb-4">
+       <div class="col-md-12">
+         <div class="gps-card">
+           <div class="d-flex flex-wrap align-items-center justify-content-between">
+             <div class="mb-2 mb-md-0">
+               <span class="status-dot" id="gps-status-dot"></span>
+               <strong id="gps-status-text" data-i18n="dest_status_ready">Ready for GPS positioning</strong>
+               <small class="text-muted ml-2" id="gps-accuracy"></small>
+               <div class="text-muted small" id="gps-substatus" data-i18n="dest_substatus_ready">Click "Get location" or turn on live tracking.</div>
+             </div>
+             <div class="d-flex flex-wrap" style="gap: 8px;">
+               <button type="button" class="btn btn-primary" id="btn-locate">
+                 <span class="fa fa-crosshairs mr-1"></span> <span data-i18n="dest_btn_locate">Get location</span>
+               </button>
+               <button type="button" class="btn btn-outline-success" id="btn-watch">
+                 <span class="fa fa-location-arrow mr-1"></span> <span id="btn-watch-label" data-i18n="dest_btn_watch_off">Live tracking: OFF</span>
+               </button>
+               <button type="button" class="btn btn-outline-secondary" id="btn-demo" title="Dùng để thử trên máy không có GPS">
+                 <span class="fa fa-map-pin mr-1"></span> <span data-i18n="dest_btn_demo">Sample location</span>
+               </button>
+               <button type="button" class="btn btn-outline-dark" id="btn-mode">
+                 <span class="fa fa-list mr-1"></span> <span id="btn-mode-label" data-i18n="dest_btn_manual">Browse manually</span>
+               </button>
+             </div>
+           </div>
+           <div class="alert alert-warning small mt-3 mb-0 d-none" id="gps-warning"></div>
+           <div class="alert alert-secondary small mt-3 mb-0 d-none" id="net-warning"></div>
+         </div>
+       </div>
+     </div>
+
+     <div class="row">
+       <!-- Bản đồ -->
+       <div class="col-lg-7 mb-4">
+         <div class="gmaps-wrapper">
+           <iframe id="google-gps-map" title="Map"
+             src="https://maps.google.com/maps?q=10.7685,106.6365&hl=vi&z=16&output=embed"
+             allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+         </div>
+       </div>
+       <!-- Nội dung thuyết minh -->
+       <div class="col-lg-5 mb-4">
+         <div class="gps-card" id="detail-panel">
+           <p class="text-muted mb-0" id="detail-placeholder" data-i18n="dest_select_hint">Choose an attraction from the list.</p>
+           <div id="detail-content" class="d-none">
+             <div class="d-flex justify-content-between align-items-start mb-2">
+               <div>
+                 <small class="text-muted" id="detail-zone"></small>
+                 <h4 class="mb-1" id="detail-title"></h4>
+               </div>
+               <button type="button" class="btn btn-sm btn-light" id="btn-detail-close" data-i18n="dest_close">Close</button>
+             </div>
+             <div class="alert alert-info small py-2 d-none" id="detail-fallback" data-i18n="dest_fallback">No translation yet.</div>
+             <audio id="detail-audio" controls preload="none" class="w-100 mb-2 d-none"></audio>
+             <p class="small text-muted d-none" id="detail-no-audio" data-i18n="dest_no_audio">No audio yet.</p>
+             <div id="detail-body" class="detail-body"></div>
+           </div>
+         </div>
+       </div>
+     </div>
+
+     <!-- Danh sách điểm gần (UC02) -->
+     <div class="row mt-2" id="nearby-section">
+       <div class="col-md-12">
+         <div class="gps-card">
+           <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+             <h4 class="mb-0"><span class="fa fa-map-marker text-primary mr-2"></span><span data-i18n="dest_list_title">Attractions near you</span></h4>
+             <div class="d-flex align-items-center" style="gap: 10px;">
+               <span class="text-muted small" data-i18n="dest_list_hint">Tap an attraction to view and listen to its guide</span>
+               <button type="button" class="btn btn-sm btn-outline-dark d-none" id="btn-clear-route" data-i18n="dest_btn_clear_route">Show my pin only</button>
+             </div>
+           </div>
+           <div id="spots-list"></div>
+         </div>
+       </div>
+     </div>
+
+     <!-- Duyệt thủ công theo khu vực (UC03) -->
+     <div class="row mt-2 d-none" id="manual-section">
+       <div class="col-md-12">
+         <div class="gps-card">
+           <h4 class="mb-3"><span class="fa fa-th-list text-primary mr-2"></span><span data-i18n="dest_manual_title">Browse attractions by area</span></h4>
+           <div class="form-row mb-3">
+             <div class="col-md-4 mb-2"><select class="form-control" id="zone-select"></select></div>
+             <div class="col-md-8 mb-2"><input type="search" class="form-control" id="search-input" data-i18n-placeholder="dest_search_ph" placeholder="Search by name..."></div>
+           </div>
+           <div id="manual-list"></div>
+           <div class="d-flex justify-content-between align-items-center mt-2" id="manual-pager">
+             <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-prev" data-i18n="dest_prev">Previous</button>
+             <small class="text-muted" id="page-info"></small>
+             <button type="button" class="btn btn-sm btn-outline-secondary" id="btn-next" data-i18n="dest_next">Next</button>
+           </div>
+         </div>
+       </div>
+     </div>
+   </div>
+ </section>
+
+ <footer class="ftco-footer bg-bottom ftco-no-pt" style="background-image: url(images/bg_3.jpg);">
+  <div class="container">
+    <div class="row mb-5">
+      <div class="col-md pt-5">
+        <div class="ftco-footer-widget pt-md-5 mb-4">
+          <h2 class="ftco-heading-2" data-i18n="footer_about_title">About</h2>
+          <p data-i18n="footer_about_text">Location-based multilingual audio guide for Dam Sen Park.</p>
+          <ul class="ftco-footer-social list-unstyled float-md-left float-lft">
+            <li class="ftco-animate"><a href="https://www.facebook.com/damsenpark.vn" target="_blank" rel="noopener"><span class="fa fa-facebook"></span></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md pt-5 border-left">
+        <div class="ftco-footer-widget pt-md-5 mb-4 ml-md-5">
+          <h2 class="ftco-heading-2" data-i18n="footer_links_title">Quick links</h2>
+          <ul class="list-unstyled">
+            <li><a href="index.html" class="py-2 d-block" data-i18n="nav_home">Home</a></li>
+            <li><a href="destination.html" class="py-2 d-block" data-i18n="nav_gps">Location &amp; Audio Guide</a></li>
+            <li><a href="contact.html" class="py-2 d-block" data-i18n="nav_contact">Contact</a></li>
+            <li><a href="admin.html" class="py-2 d-block" data-i18n="footer_link_admin">Admin</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md pt-5 border-left">
+        <div class="ftco-footer-widget pt-md-5 mb-4">
+          <h2 class="ftco-heading-2" data-i18n="footer_spots_title">Guided attractions</h2>
+          <ul class="list-unstyled">
+            <li><a href="destination.html" class="py-2 d-block" data-i18n="card_roller">Roller Coaster</a></li>
+            <li><a href="destination.html" class="py-2 d-block" data-i18n="card_looping">Looping Carp</a></li>
+            <li><a href="destination.html" class="py-2 d-block" data-i18n="card_aquarium">Aquarium</a></li>
+            <li><a href="destination.html" class="py-2 d-block" data-i18n="card_birdgarden">Bird Garden</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md pt-5 border-left">
+        <div class="ftco-footer-widget pt-md-5 mb-4">
+          <h2 class="ftco-heading-2" data-i18n="footer_questions_title">Contact</h2>
+          <div class="block-23 mb-3">
+            <ul>
+              <li><span class="icon fa fa-map-marker"></span><span class="text" data-i18n="footer_address">3 Hoa Binh St, Binh Thoi Ward, Ho Chi Minh City</span></li>
+              <li><a href="tel:+842839632483"><span class="icon fa fa-phone"></span><span class="text">028 3963 2483</span></a></li>
+              <li><a href="http://damsenpark.vn" target="_blank" rel="noopener"><span class="icon fa fa-globe"></span><span class="text">damsenpark.vn</span></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 text-center">
+        <p><span data-i18n="footer_copyright">Software Engineering course project – Group 09, Saigon University.</span><br>
+          <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+          <small>Template by <a href="https://colorlib.com" target="_blank" rel="noopener">Colorlib</a></small></p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+ <!-- loader -->
+ <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+ <script src="js/jquery.min.js"></script>
+ <script src="js/jquery-migrate-3.0.1.min.js"></script>
+ <script src="js/popper.min.js"></script>
+ <script src="js/bootstrap.min.js"></script>
+ <script src="js/jquery.easing.1.3.js"></script>
+ <script src="js/jquery.waypoints.min.js"></script>
+ <script src="js/jquery.stellar.min.js"></script>
+ <script src="js/owl.carousel.min.js"></script>
+ <script src="js/jquery.magnific-popup.min.js"></script>
+ <script src="js/jquery.animateNumber.min.js"></script>
+ <script src="js/bootstrap-datepicker.js"></script>
+ <script src="js/scrollax.min.js"></script>
+ <script src="js/main.js"></script>
+ <script src="js/i18n.js"></script>
+
+ <script src="js/destination.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,8 @@
+target/
+*.class
+*.jar
+.idea/
+.vscode/
+node_modules/
+dist/
+.env

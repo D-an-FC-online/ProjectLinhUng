@@ -1,0 +1,59 @@
+# Chạy toàn bộ hệ thống bằng Docker (theo Deployment Diagram trong PRD):
+#   docker compose up -d --build
+# Sau đó mở http://localhost:8080  (trang quản trị: http://localhost:8080/admin.html)
+# Mật khẩu có thể đổi bằng file .env cạnh file này (xem .env.example).
+
+services:
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-DamSen@2026}
+    ports:
+      - "1433:1433"          # để mở bằng SSMS: server "localhost,1433", user sa
+    volumes:
+      - mssql-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+  # Init container (chạy một lần): tạo database DamSenAudioGuide + login cho ứng dụng.
+  # Bảng và dữ liệu mẫu do Flyway trong ứng dụng tạo khi khởi động.
+  db-init:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-DamSen@2026}
+    volumes:
+      - ./database:/scripts:ro
+    entrypoint: ["/bin/bash", "-c", "/opt/mssql-tools18/bin/sqlcmd -C -I -S db -U sa -P \"$$MSSQL_SA_PASSWORD\" -b -i /scripts/00_create_database.sql"]
+    restart: "no"
+
+  app:
+    image: ${APP_IMAGE:-damsen-guide:latest}
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    depends_on:
+      db-init:
+        condition: service_completed_successfully
+    environment:
+      DB_URL: jdbc:sqlserver://db:1433;databaseName=DamSenAudioGuide;encrypt=true;trustServerCertificate=true
+      DB_USER: damsen_app
+      DB_PASSWORD: DamSen@2026
+      MEDIA_DIR: /data/media
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./data/audio:/data/media     # file mp3 thuyết minh (có sẵn dữ liệu mẫu)
+    restart: unless-stopped
+
+volumes:
+  mssql-data:

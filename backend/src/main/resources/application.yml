@@ -1,0 +1,62 @@
+# Cấu hình chung. Mọi giá trị có dạng ${TEN_BIEN:mac_dinh} đều đổi được bằng biến môi trường
+# (docker-compose.yml truyền các biến này khi chạy bằng Docker).
+server:
+  port: ${PORT:8080}
+  servlet:
+    session:
+      cookie:
+        http-only: true
+        same-site: lax
+        secure: ${COOKIE_SECURE:false}   # đặt true khi chạy qua HTTPS
+
+spring:
+  application:
+    name: damsen-guide
+  datasource:
+    url: ${DB_URL:jdbc:sqlserver://localhost:1433;databaseName=DamSenAudioGuide;encrypt=true;trustServerCertificate=true}
+    username: ${DB_USER:damsen_app}
+    password: ${DB_PASSWORD:DamSen@2026}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate        # chỉ kiểm tra entity khớp bảng; bảng do Flyway tạo
+    properties:
+      hibernate:
+        jdbc.time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  servlet:
+    multipart:
+      max-file-size: 30MB
+      max-request-size: 30MB
+  web:
+    resources:
+      # Khi chạy bằng "mvn spring-boot:run" trong thư mục backend: đọc giao diện trực tiếp từ ../frontend
+      # (sửa HTML/JS xong chỉ cần F5). Khi chạy file jar/Docker: dùng bản đã đóng gói (classpath:/static/).
+      static-locations: file:../frontend/,file:frontend/,classpath:/static/
+
+app:
+  # Thư mục chứa file mp3 thuyết minh (storage_key trong bảng audio_assets là tên file trong thư mục này).
+  # Đường dẫn tương đối: nếu không thấy thì tự thử thêm data/audio (khi chạy từ thư mục gốc dự án).
+  media-dir: ${MEDIA_DIR:../data/audio}
+  nearby:
+    default-radius-m: 300      # Story 1.2: bán kính tìm mặc định
+    group-distance-m: 20       # các điểm cách nhau < 20m được gom chung nhóm
+  jobs:
+    poll-interval-ms: 3000
+    max-retries: 3
+  # Dịch máy và TTS dùng Google Cloud (REST + API key). Để trống = chưa bật:
+  # job sẽ FAILED với thông báo rõ ràng, quản trị viên vẫn có thể nhập bản dịch tay và tải audio lên.
+  google:
+    api-key: ${GOOGLE_API_KEY:}
+    translate-url: https://translation.googleapis.com/language/translate/v2
+    tts-url: https://texttospeech.googleapis.com/v1/text:synthesize
+    voices:
+      vi: vi-VN-Standard-A
+      en: en-US-Standard-C
+      ko: ko-KR-Standard-A
+
+logging:
+  level:
+    org.hibernate.SQL: warn
