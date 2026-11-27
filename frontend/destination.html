@@ -243,6 +243,45 @@
          </div>
        </div>
      </div>
+
+     <!-- Tính khoảng cách giữa 2 điểm bất kỳ A và B (công thức Haversine) -->
+     <div class="row mt-4" id="distance-section">
+       <div class="col-md-12">
+         <div class="gps-card">
+           <h4 class="mb-2"><span class="fa fa-arrows-h text-primary mr-2"></span><span data-i18n="dist_title">Distance between two points</span></h4>
+           <p class="text-muted small mb-3" data-i18n="dist_desc">Choose an attraction, your location, or type any coordinates for points A and B.</p>
+           <div class="form-row">
+             <div class="col-md-6 mb-3">
+               <label class="font-weight-bold mb-1" for="dist-a-select" data-i18n="dist_point_a">Point A</label>
+               <select class="form-control mb-2" id="dist-a-select"></select>
+               <div class="form-row">
+                 <div class="col"><input type="text" inputmode="decimal" class="form-control" id="dist-a-lat" data-i18n-placeholder="dist_lat_ph" placeholder="Latitude"></div>
+                 <div class="col"><input type="text" inputmode="decimal" class="form-control" id="dist-a-lng" data-i18n-placeholder="dist_lng_ph" placeholder="Longitude"></div>
+               </div>
+             </div>
+             <div class="col-md-6 mb-3">
+               <label class="font-weight-bold mb-1" for="dist-b-select" data-i18n="dist_point_b">Point B</label>
+               <select class="form-control mb-2" id="dist-b-select"></select>
+               <div class="form-row">
+                 <div class="col"><input type="text" inputmode="decimal" class="form-control" id="dist-b-lat" data-i18n-placeholder="dist_lat_ph" placeholder="Latitude"></div>
+                 <div class="col"><input type="text" inputmode="decimal" class="form-control" id="dist-b-lng" data-i18n-placeholder="dist_lng_ph" placeholder="Longitude"></div>
+               </div>
+             </div>
+           </div>
+           <div class="d-flex flex-wrap align-items-center" style="gap: 10px;">
+             <button type="button" class="btn btn-primary" id="btn-dist-calc">
+               <span class="fa fa-calculator mr-1"></span> <span data-i18n="dist_btn_calc">Calculate distance</span>
+             </button>
+             <button type="button" class="btn btn-outline-secondary" id="btn-dist-swap">
+               <span class="fa fa-exchange mr-1"></span> <span data-i18n="dist_btn_swap">Swap A and B</span>
+             </button>
+             <span class="badge-distance d-none" id="dist-result" style="font-size: 15px;"></span>
+           </div>
+           <div class="alert alert-danger small mt-3 mb-0 d-none" id="dist-error"></div>
+           <div class="small text-muted mt-2" id="dist-detail"></div>
+         </div>
+       </div>
+     </div>
    </div>
  </section>
 

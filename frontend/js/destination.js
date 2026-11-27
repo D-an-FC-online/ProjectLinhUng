@@ -26,6 +26,8 @@
     watchId: null,
     nearby: [],
     selectedId: null,
+    distanceRoute: null,     // {a:{lat,lng}, b:{lat,lng}} khi đang hiện đường đi A -> B trên bản đồ
+    distPois: [],            // danh sách điểm tham quan cho ô chọn A/B
     manual: { zoneId: "", q: "", page: 0, total: 0 },
     status: { type: "", titleKey: "dest_status_ready", subKey: "dest_substatus_ready", raw: null }
   };
@@ -206,8 +208,13 @@
   function updateMap() {
     var hl = lang();
     var spot = state.selectedId ? findSpot(state.selectedId) : null;
-    $("btn-clear-route").classList.toggle("d-none", !spot);
-    if (spot && state.pos) {
+    $("btn-clear-route").classList.toggle("d-none", !spot && !state.distanceRoute);
+    if (!spot && state.distanceRoute) {
+      // Đường đi giữa 2 điểm A -> B do người dùng chọn ở khung "Khoảng cách giữa 2 điểm"
+      var r = state.distanceRoute;
+      setMap("https://maps.google.com/maps?saddr=" + r.a.lat + "," + r.a.lng +
+        "&daddr=" + r.b.lat + "," + r.b.lng + "&hl=" + hl + "&output=embed");
+    } else if (spot && state.pos) {
       setMap("https://maps.google.com/maps?saddr=" + state.pos.lat + "," + state.pos.lng +
         "&daddr=" + spot.latitude + "," + spot.longitude + "&dirflg=w&hl=" + hl + "&output=embed");
     } else if (spot) {
@@ -368,6 +375,129 @@
     updateMap();
   }
 
+  /* ---------------- Khoảng cách giữa 2 điểm bất kỳ A và B ----------------
+     Dùng lại distanceM() ở trên (công thức Haversine, R = 6 371 km).
+     Mỗi điểm lấy từ: một điểm tham quan (API), vị trí hiện tại, hoặc tọa độ nhập tay. */
+
+  var EARTH_RADIUS_M = 6371000;
+
+  function distFormat(m) {
+    // Hiện chính xác hơn formatDistance(): 1 chữ số thập phân khi dưới 1 km
+    return m < 1000 ? m.toFixed(1) + " m" : (m / 1000).toFixed(2) + " km";
+  }
+
+  /** Đổ danh sách lựa chọn cho ô chọn A/B: nhập tay, vị trí của tôi, các điểm tham quan. */
+  function fillDistSelect(sel) {
+    var current = sel.value || "custom";
+    sel.innerHTML =
+      '<option value="custom">' + escapeHtml(t("dist_opt_custom")) + "</option>" +
+      '<option value="me">' + escapeHtml(t("dist_opt_me")) + "</option>" +
+      (state.distPois.length
+        ? '<optgroup label="' + escapeHtml(t("dist_group_poi")) + '">' +
+          state.distPois.map(function (p) {
+            return '<option value="poi:' + p.id + '">' + escapeHtml(p.title) + "</option>";
+          }).join("") + "</optgroup>"
+        : "");
+    sel.value = current;
+    if (sel.value !== current) sel.value = "custom";
+  }
+
+  function loadDistancePois() {
+    fillDistSelect($("dist-a-select"));
+    fillDistSelect($("dist-b-select"));
+    return getJson(API + "/pois?lang=" + lang() + "&page=0&size=100").then(function (page) {
+      state.distPois = page.items || [];
+      fillDistSelect($("dist-a-select"));
+      fillDistSelect($("dist-b-select"));
+    }).catch(function () { /* vẫn nhập tọa độ tay được */ });
+  }
+
+  /** Chọn một mục trong ô chọn thì điền tọa độ tương ứng vào ô vĩ độ / kinh độ. */
+  function onDistSelect(key) {
+    var v = $("dist-" + key + "-select").value;
+    var pt = null;
+    if (v === "me" && state.pos) pt = { lat: state.pos.lat, lng: state.pos.lng };
+    if (v.indexOf("poi:") === 0) {
+      var poi = state.distPois.filter(function (p) { return "poi:" + p.id === v; })[0];
+      if (poi) pt = { lat: poi.latitude, lng: poi.longitude };
+    }
+    if (pt) {
+      $("dist-" + key + "-lat").value = pt.lat;
+      $("dist-" + key + "-lng").value = pt.lng;
+    }
+  }
+
+  /** Đọc tọa độ một điểm. Trả về {lat,lng} hoặc {error: "..."}; chấp nhận dấu phẩy thập phân (10,7636). */
+  function readDistPoint(key, label) {
+    if ($("dist-" + key + "-select").value === "me") {
+      if (!state.pos) return { error: t("dist_err_no_pos") };
+      onDistSelect(key); // lấy vị trí mới nhất
+    }
+    var latText = $("dist-" + key + "-lat").value.trim().replace(",", ".");
+    var lngText = $("dist-" + key + "-lng").value.trim().replace(",", ".");
+    if (latText === "" || lngText === "") return { error: t("dist_err_missing", { p: label }) };
+    var lat = Number(latText), lng = Number(lngText);
+    if (!isFinite(lat) || lat < -90 || lat > 90) return { error: t("dist_err_lat", { p: label }) };
+    if (!isFinite(lng) || lng < -180 || lng > 180) return { error: t("dist_err_lng", { p: label }) };
+    return { lat: lat, lng: lng };
+  }
+
+  function showDistError(msg) {
+    $("dist-error").textContent = msg;
+    $("dist-error").classList.remove("d-none");
+    $("dist-result").classList.add("d-none");
+    $("dist-detail").textContent = "";
+  }
+
+  function calcDistance() {
+    $("dist-error").classList.add("d-none");
+    var a = readDistPoint("a", "A");
+    if (a.error) { showDistError(a.error); return; }
+    var b = readDistPoint("b", "B");
+    if (b.error) { showDistError(b.error); return; }
+    if (a.lat === b.lat && a.lng === b.lng) { showDistError(t("dist_err_same")); return; }
+
+    var d = distanceM(a, b);                                   // mét
+    var centralDeg = (d / EARTH_RADIUS_M) * 180 / Math.PI;     // góc ở tâm Trái Đất c = d / R
+    $("dist-result").textContent = t("dist_result", { d: distFormat(d) });
+    $("dist-result").classList.remove("d-none");
+    $("dist-detail").textContent = t("dist_detail", {
+      a: a.lat + ", " + a.lng,
+      b: b.lat + ", " + b.lng,
+      m: d.toFixed(2),
+      deg: centralDeg.toFixed(6)
+    });
+
+    // Hiện đường đi A -> B trên bản đồ (bỏ chọn điểm tham quan đang mở nếu có)
+    state.selectedId = null;
+    state.distanceRoute = { a: a, b: b };
+    renderNearby();
+    updateMap();
+  }
+
+  function swapDistance() {
+    ["select", "lat", "lng"].forEach(function (f) {
+      var ea = $("dist-a-" + f), eb = $("dist-b-" + f), tmp = ea.value;
+      ea.value = eb.value;
+      eb.value = tmp;
+    });
+    if (!$("dist-result").classList.contains("d-none")) calcDistance();
+  }
+
+  ["a", "b"].forEach(function (key) {
+    $("dist-" + key + "-select").addEventListener("change", function () { onDistSelect(key); });
+    // Sửa tay tọa độ thì ô chọn chuyển về "Nhập tọa độ"
+    ["lat", "lng"].forEach(function (f) {
+      $("dist-" + key + "-" + f).addEventListener("input", function () { $("dist-" + key + "-select").value = "custom"; });
+      $("dist-" + key + "-" + f).addEventListener("keydown", function (e) { if (e.key === "Enter") calcDistance(); });
+    });
+  });
+  $("btn-dist-calc").addEventListener("click", calcDistance);
+  $("btn-dist-swap").addEventListener("click", swapDistance);
+
+  // Cho phép kiểm tra nhanh trong Console: DamSenGeo.distanceM({lat:..,lng:..}, {lat:..,lng:..})
+  window.DamSenGeo = { distanceM: distanceM };
+
   /* ------------------------- Sự kiện ------------------------- */
 
   function onListClick(e) {
@@ -391,7 +521,7 @@
   });
 
   $("btn-detail-close").addEventListener("click", closeDetail);
-  $("btn-clear-route").addEventListener("click", function () { state.selectedId = null; renderNearby(); updateMap(); });
+  $("btn-clear-route").addEventListener("click", function () { state.selectedId = null; state.distanceRoute = null; renderNearby(); updateMap(); });
   $("btn-locate").addEventListener("click", locateOnce);
   $("btn-watch").addEventListener("click", function () {
     if (state.watchId !== null) { stopWatch(); setStatus("", "dest_watch_stopped", "dest_watch_stopped_sub"); }
@@ -425,6 +555,9 @@
     loadNearby();
     if (state.mode === "manual") { loadZones(); loadManual(); }
     if (state.selectedId) openDetail(state.selectedId);
+    loadDistancePois().then(function () {
+      if (!$("dist-result").classList.contains("d-none")) calcDistance();
+    });
   });
 
   // Kiểm tra vị trí cũ (STALE) định kỳ
@@ -433,5 +566,6 @@
   /* ------------------------- Khởi động ------------------------- */
   setWatchButton(false);
   renderNearby();
+  loadDistancePois();
   startWatch(); // theo dõi liên tục (watchPosition) - giữ quyền vị trí và màn hình danh sách sau khi nghe
 })();
